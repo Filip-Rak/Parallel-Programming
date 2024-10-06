@@ -1,0 +1,28 @@
+- make
+- kompilacja kilku programow z jendym makiem
+
+
+
+# Opcje GCC:
+## Kompilacja i Linkowanie
+	-o <filename>: wyjscie do pliku o wskazanej nazwie
+	-c: kompiluje kod zrodlowy do obiektu
+	-g: zawiera informacje dla debuggera
+	-I<directory>: dodaje katalog do przeszukania pod wzgledem plikow naglowkowych
+	-L<directory>: dodaje katalog do przeszukania pod wzgledem biliotek
+	-l<library>: linkuje ze wskazana biblioteka (bez prefixu "lib" i rozszerzenia)
+## Optymalizacja
+	-00: bez optymalizacji (default)
+	-01: podstawowa optymalizacja wydajnosci i rozmiaru (drobny wplyw na czas kompilacji)
+	-02: dalsza ooptymalizacja
+	-03: maksymalna optymalizacja
+	-0s: optymalizacja pod rozmiar
+	
+## Ostrzerzenia
+	-Wall: uwzglednia wiekszosc ostrzerzen
+	-Wextra: uwzglednia dodatkowe ostrzerzenia
+	-Werror: traktuje ostrzerzenia jako bledy
+	
+## Standard C:
+	-std=c17: specyfikuje standard C
+
