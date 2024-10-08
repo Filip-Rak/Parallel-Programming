@@ -21,14 +21,14 @@ int funkcja_watku( void* argument )
 
   zmienna_globalna++;
 
+  // Przygotowanie argumentów do execv
+  char clock_time[32];
+  char cpu_time[32];
+
   // Zapisz czas
   struct timespec clock, CPU;
   clock_gettime(CLOCK_REALTIME, &clock);
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &CPU);
-
-  // Przygotowanie argumentów do execv
-  char clock_time[32];
-  char cpu_time[32];
 
   // Konwersja czasu na string
   snprintf(clock_time, sizeof(clock_time), "%ld.%09ld", clock.tv_sec, clock.tv_nsec);
