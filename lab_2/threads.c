@@ -20,11 +20,12 @@ struct thread_args
 int thread_func(void* arguments)
 {
     struct thread_args* args = (struct thread_args*)arguments;
+    int local_var = args->local_var;
 
     for (int i = 0; i < 100000; i++)
     {
         global_var++;
-        args -> local_var++;
+        local_var++;
     }
 
     printf("----------THREAD_NUM: %d----------\n", args -> thread_num);
@@ -52,7 +53,7 @@ int main()
     // Creating threads
     pid_t thread1, thread2;
     thread1 = clone(thread_func, stack1 + STACK_SIZE, CLONE_VM, &args1);
-    thread2 = clone(thread_func, stack2 + STACK_SIZE, CLONE_VM, &args2);
+    thread2 = clone(thread_func, stack2 + STACK_SIZE, CLONE_VM, &args1);
 
     // Waiting for thread execution
     waitpid(thread1, NULL, __WCLONE);

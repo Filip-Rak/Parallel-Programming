@@ -8,9 +8,11 @@
 	-o <filename>: wyjscie do pliku o wskazanej nazwie
 	-c: kompiluje kod zrodlowy do obiektu
 	-g: zawiera informacje dla debuggera
+	-DDEBUG: pozwala na kompilacje kodu , ktory jest defined jako #DEBUG
 	-I<directory>: dodaje katalog do przeszukania pod wzgledem plikow naglowkowych
 	-L<directory>: dodaje katalog do przeszukania pod wzgledem biliotek
 	-l<library>: linkuje ze wskazana biblioteka (bez prefixu "lib" i rozszerzenia)
+	np. lpomiar_czasu lub lm (matematyczna)
 ## Optymalizacja
 	-00: bez optymalizacji (default)
 	-01: podstawowa optymalizacja wydajnosci i rozmiaru (drobny wplyw na czas kompilacji)

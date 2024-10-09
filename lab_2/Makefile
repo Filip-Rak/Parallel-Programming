@@ -16,7 +16,7 @@ INC = -I../pomiar_czasu
 # biblioteki
 LIB = -L../pomiar_czasu -lpomiar_czasu -lm
 
-all: fork clone
+all: fork clone program program2 threads clone_test
 
 # zaleznosci i komendy
 fork: fork.o 
@@ -30,9 +30,21 @@ fork.o: fork.c ../pomiar_czasu/pomiar_czasu.h
 clone: clone.o 
 	$(LOADER) $(OPT) clone.o -o clone $(LIB)
 
+program: program.c
+		$(LOADER) $(OPT) program.c -o program
+
+program2: program2.c
+		$(LOADER) $(OPT) program2.c -o program2
+
+threads: threads.c
+		$(LOADER) $(OPT) threads.c -o threads
+		
+clone_test: clone_test.c
+		$(LOADER) $(OPT) clone_test.c -o clone_test
+
 # jak uzyskac plik clone.o ?
 clone.o: clone.c ../pomiar_czasu/pomiar_czasu.h
 	$(CCOMP) -c $(OPT) clone.c $(INC) 
 
 clean:
-	rm -f *.o fork clone
+	rm -f *.o fork clone program program2 threads clone_test

@@ -53,7 +53,7 @@ int thread_func5_2(void* arg)
 int thread_func5_3(void* arg)
 {
     // Zmiana katalogu
-    if (chdir("/tmp") != 0) 
+    if (chdir("test_dir") != 0) 
     {
         perror("CLONE_TEST.C::THREAD_FUNC5_3 -> chdir failed\n");
         return -1;
@@ -145,10 +145,10 @@ void ex5_3(void* stack)
     // ---------------------------------------------------
 
     // Watek z flaga CLONE_FS
-    pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD | CLONE_FS, NULL);
+    // pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD | CLONE_FS, NULL);
 
     // Watek bez flagi CLONE_FS
-    // pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD, NULL);
+    pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD, NULL);
 
     if (pid == -1)
     {

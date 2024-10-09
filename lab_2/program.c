@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
     // Print results
     printf("---------------------------------\n");
-    printf("Czas zegara:\t%.14lf\n", elapsed_clock);
+    printf("Czas Zegara:\t%.14lf\n", elapsed_clock);
     printf("Czas CPU:\t%.14lf\n", elapsed_cpu);
 
 }
