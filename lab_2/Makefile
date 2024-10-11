@@ -18,15 +18,12 @@ LIB = -L../pomiar_czasu -lpomiar_czasu -lm
 
 all: fork clone program program2 threads clone_test
 
-# zaleznosci i komendy
 fork: fork.o 
 	$(LOADER) $(OPT) fork.o -o fork $(LIB)
 
-# jak uzyskac plik fork.o ?
 fork.o: fork.c ../pomiar_czasu/pomiar_czasu.h
 	$(CCOMP) -c $(OPT) fork.c $(INC) 
 
-# zaleznosci i komendy
 clone: clone.o 
 	$(LOADER) $(OPT) clone.o -o clone $(LIB)
 
@@ -42,7 +39,6 @@ threads: threads.c
 clone_test: clone_test.c
 		$(LOADER) $(OPT) clone_test.c -o clone_test
 
-# jak uzyskac plik clone.o ?
 clone.o: clone.c ../pomiar_czasu/pomiar_czasu.h
 	$(CCOMP) -c $(OPT) clone.c $(INC) 
 

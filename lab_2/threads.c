@@ -11,16 +11,9 @@
 
 int global_var = 0;
 
-struct thread_args
-{
-    int thread_num;
-    int local_var;
-};
-
 int thread_func(void* arguments)
 {
-    struct thread_args* args = (struct thread_args*)arguments;
-    int local_var = args->local_var;
+    int local_var = *((int*)arguments);
 
     for (int i = 0; i < 100000; i++)
     {
@@ -28,9 +21,9 @@ int thread_func(void* arguments)
         local_var++;
     }
 
-    printf("----------THREAD_NUM: %d----------\n", args -> thread_num);
+    printf("----------THREAD----------\n");
     printf("global_var: %d\n", global_var);
-    printf("local_var: %d\n", args -> local_var);
+    printf("local_var: %d\n", local_var);
 
     return 0;
 }
@@ -47,13 +40,12 @@ int main()
     }
 
     // Thread arguments
-    struct thread_args args1 = {1, 0};
-    struct thread_args args2 = {2, 0};
+    int arg1 = 0;
 
     // Creating threads
     pid_t thread1, thread2;
-    thread1 = clone(thread_func, stack1 + STACK_SIZE, CLONE_VM, &args1);
-    thread2 = clone(thread_func, stack2 + STACK_SIZE, CLONE_VM, &args1);
+    thread1 = clone(thread_func, stack1 + STACK_SIZE, CLONE_VM, &arg1);
+    thread2 = clone(thread_func, stack2 + STACK_SIZE, CLONE_VM, &arg1);
 
     // Waiting for thread execution
     waitpid(thread1, NULL, __WCLONE);
@@ -62,8 +54,7 @@ int main()
     // Outputting results
     printf("----------MAIN----------\n");
     printf("global_var: %d\n", global_var);
-    printf("args1->local_var: %d\n", args1.local_var);
-    printf("args2->local_var: %d\n", args2.local_var);
+    printf("arg: %d\n", arg1);
 
     // Memory cleanup
     free(stack1);
