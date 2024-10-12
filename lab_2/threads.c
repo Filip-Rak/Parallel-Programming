@@ -15,7 +15,7 @@ int thread_func(void* arguments)
 {
     int local_var = *((int*)arguments);
 
-    for (int i = 0; i < 100000; i++)
+    for (int i = 0; i < 10000000; i++)
     {
         global_var++;
         local_var++;

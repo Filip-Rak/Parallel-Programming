@@ -145,10 +145,10 @@ void ex5_3(void* stack)
     // ---------------------------------------------------
 
     // Watek z flaga CLONE_FS
-    // pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD | CLONE_FS, NULL);
+    pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD | CLONE_FS, NULL);
 
     // Watek bez flagi CLONE_FS
-    pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD, NULL);
+    // pid_t pid = clone(thread_func5_3, stack + STACK_SIZE, SIGCHLD, NULL);
 
     if (pid == -1)
     {
