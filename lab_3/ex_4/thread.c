@@ -28,8 +28,13 @@ void* thread_func(void* arg)
     pthread_getschedparam(id, &policy, &param);
     if (policy == SCHED_FIFO)
         printf("\tPolicy: SCHED_FIFO\n");
+    else if (policy == SCHED_RR)
+        printf("\tPolicy: SCHED_RR\n");
+    else if (policy == SCHED_DEADLINE)
+        printf("\tPolicy: SCHED_DEADLINE\n");
     else
-        printf("\tPolicy: Unknown Policy\n");
+        printf("\tPolicy: Different Policy\n");
+
     printf("\tPriority: %d\n", param.sched_priority);
 
     int detach_state;
@@ -96,6 +101,7 @@ int main()
     pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
     param.sched_priority = 1;
     pthread_attr_setschedparam(&attr, &param); 
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
 
     // Create thread
     rc = pthread_create(&thread1, &attr, thread_func, NULL);
@@ -150,9 +156,10 @@ int main()
     CPU_SET(3, &cpuset); 
 
     // Set policy and priority
-    pthread_attr_setschedpolicy(&attr, SCHED_DEADLINE);
+    pthread_attr_setschedpolicy(&attr, SCHED_RR);
     param.sched_priority = 3;
     pthread_attr_setschedparam(&attr, &param); 
+    pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
 
     // Create thread
     rc = pthread_create(&thread3, &attr, thread_func, NULL);
