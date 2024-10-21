@@ -50,13 +50,17 @@ int mug_number;
 
 //--------------------
 // Functions
+
+// Main thread function
 void* thread_func(void* arg);
 
+// Thread helper functions
 int wait_for_a_mug(int* done_work);
 int wait_for_a_tap(int* done_work);
 void wait_to_return_tap(int used_tap_index, int* done_work);
 void wait_to_return_mug(int used_mug_index, int* done_work);
 
+// Main function
 int main(int argc, char* argv[])
 {
     // Check if the number of arguments is correct
@@ -83,6 +87,7 @@ int main(int argc, char* argv[])
     int *thread_ids = malloc(client_number * sizeof(int));
     int *done_work = malloc(client_number * sizeof(int));
 
+    // Verify if memory allocation was successful
     if(beer_mug == NULL || threads == NULL || thread_ids == NULL || done_work == NULL)
     {
         printf("ERROR: Failed to allocate memory! Exitting...\n");
@@ -138,9 +143,7 @@ int main(int argc, char* argv[])
     // Output work done by the threads
     printf("\n---------- Summarization of work done by each thread ----------\n");
     for(int i = 0; i < client_number; i++)
-    {
         printf("Thread: %d\tWork done: %d\n", i, done_work[i]);
-    }
 
     // Output uses of each tap
     printf("\n---------- Summarization of fills from each tap ---------------\n");
@@ -148,7 +151,7 @@ int main(int argc, char* argv[])
         printf("Tap: %-15s\tFills: %d\tIs free: %d\n", beer_taps[i].name, beer_taps[i].fills, beer_taps[i].is_free);
 
     // Output uses of each mug
-    printf("\n---------- Summarization of picks of each mug -----------------\n");
+    printf("\n---------- Summarization of picks per mug ---------------------\n");
     for(int i = 0; i < mug_number; i++)
         printf("Mug: %-15d\tPicks: %d\tIs free: %d\n", i, beer_mug[i].picks, beer_mug[i].is_free);
 
