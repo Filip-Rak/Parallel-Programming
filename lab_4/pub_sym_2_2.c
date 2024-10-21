@@ -1,10 +1,13 @@
-// ----------------------------------------------------------
-// ---------------------- Exercise --------------------------
-// Simulate a pub with clients being threads.----------------
-// With unique limited beer mugs and unique limited beer taps
-// ----------------------------------------------------------
-// Execution arguments: (name), client_number, mug_number ---
-// ----------------------------------------------------------
+// -------------------------------------------------------------
+// ---------------------- Exercise -----------------------------
+// Simulate a pub with clients being threads.-------------------
+// With unique limited beer mugs and unique limited beer taps.--
+// Use trylock and busy-waiting to show how much work a thread--
+// could have done in the meantime. ----------------------------
+// -------------------------------------------------------------
+// Execution arguments: (name), client_number, mug_number ------
+// -------------------------------------------------------------
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -59,7 +62,7 @@ int main(int argc, char* argv[])
     // Check if the number of arguments is correct
     if (argc != ARG_NUMBER)
     {
-        printf("Invalid number of arguments! %d instead of %d\n", argc, ARG_NUMBER);
+        printf("ERROR: Invalid number of arguments! %d instead of %d\n", argc, ARG_NUMBER);
         return -1;
     }
 
@@ -70,7 +73,7 @@ int main(int argc, char* argv[])
     // Check if the conversion was succesful
     if (client_number == 0 || mug_number == 0)
     {
-        printf("Invalid argument types! Should be integers\n");
+        printf("ERROR: Invalid argument types! Should be integers\n");
         return -2;
     }
 
@@ -79,6 +82,23 @@ int main(int argc, char* argv[])
     pthread_t *threads = malloc(client_number * sizeof(pthread_t));
     int *thread_ids = malloc(client_number * sizeof(int));
     int *done_work = malloc(client_number * sizeof(int));
+
+    if(beer_mug == NULL || threads == NULL || thread_ids == NULL || done_work == NULL)
+    {
+        printf("ERROR: Failed to allocate memory! Exitting...\n");
+
+        // Clear dynamically allocated memory
+        free(beer_mug);
+        free(threads);
+        free(thread_ids);
+        free(done_work);
+
+        // Clean mutexes
+        pthread_mutex_destroy(&mug_mutex);
+        pthread_mutex_destroy(&tap_mutex);
+
+        return -3;
+    }
 
     // Initialize dynamic memory
     for(int i = 0; i < mug_number; i++)
@@ -93,10 +113,10 @@ int main(int argc, char* argv[])
         thread_ids[i] = i;
         int rc = pthread_create(&threads[i], NULL, thread_func, &thread_ids[i]);
         if (rc != 0)
-            printf("Failed to create thread %d. Reason: %d", i, rc);
+            printf("ERROR: Failed to create thread %d. Reason: %d", i, rc);
     }
 
-    // Get done work from threads
+    // Get work done by the threads
     for(int i = 0; i < client_number; i++)
     {
         if(threads[i])
@@ -138,7 +158,12 @@ int main(int argc, char* argv[])
     free(thread_ids);
     free(done_work);
 
-    pthread_exit(NULL);
+    // Clean mutexes
+    pthread_mutex_destroy(&mug_mutex);
+    pthread_mutex_destroy(&tap_mutex);
+
+    // Exit the main function
+    return 0;
 }
 
 void* thread_func(void* arg)
