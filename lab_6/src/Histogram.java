@@ -3,6 +3,7 @@ import java.util.Scanner;
 
 class Histogram
 {
+    private static boolean all_clear = true;
 
     public static void main(String[] args)
     {
@@ -60,7 +61,7 @@ class Histogram
             // Block decomposition
             int per_thread = (ascii_length + THREAD_NUM - 1) / THREAD_NUM;
             int start_index = (i * per_thread);
-            int end_index = (i == THREAD_NUM - 1) ? ascii_length : (i + 1) * per_thread;
+            int end_index = Math.min((i + 1) * per_thread, ascii_length);
             int index_stride = 1;
             ids[i] = i;
 
@@ -78,8 +79,8 @@ class Histogram
         // Verify the result
         verify_and_clear(image_1);
 
-        /* Thread Variant 3 - Cyclical row decomposition of existing characters */
-        System.out.println("---------- Thread Variant 3 ----------");
+        /* Thread Variant 3_1 - Cyclical row decomposition of existing characters */
+        System.out.println("---------- Thread Variant 3_1 ----------");
         ThreadVariant3[] threads_v3 = new ThreadVariant3[THREAD_NUM];
 
         // Decomposition and thread creation
@@ -91,7 +92,7 @@ class Histogram
             int stride = THREAD_NUM;
 
             // create runnable class instance
-            threads_v3[i] = new ThreadVariant3(start_index, end_index, stride, 0, input_cols, 1, image_1, ids[i]);
+            threads_v3[i] = new ThreadVariant3(start_index, end_index, stride, 0, input_cols, 1, image_1);
 
             // Create a thread instance and run it
             thread_instances[i] = new Thread(threads_v3[i]);
@@ -114,6 +115,96 @@ class Histogram
         // Verify the result
         verify_and_clear(image_1);
 
+        /* Thread Variant 3_2 - Block column decomposition of existing characters */
+        System.out.println("---------- Thread Variant 3_2 ----------");
+        threads_v3 = new ThreadVariant3[THREAD_NUM];
+
+        // Decomposition and thread creation
+        for (int i = 0; i < THREAD_NUM; i++)
+        {
+            // Block column decomposition
+            int per_thread = (input_cols + THREAD_NUM - 1) / THREAD_NUM;
+            int start_index = (i * per_thread);
+            int end_index = Math.min((i + 1) * per_thread, input_cols);
+            int index_stride = 1;
+
+            // create runnable class instance
+            threads_v3[i] = new ThreadVariant3(0, input_rows , 1, start_index, end_index, index_stride, image_1);
+
+            // Create a thread instance and run it
+            thread_instances[i] = new Thread(threads_v3[i]);
+            thread_instances[i].start();
+        }
+
+        // Wait for threads to finish
+        wait_for_threads(thread_instances);
+
+        // Consolidate thread results
+        for (int i = 0; i < THREAD_NUM; i++)
+        {
+            int[] result = threads_v3[i].get_results();
+            image_1.include_histogram(result);
+        }
+
+        // Display result
+        image_1.display_symbol_count();
+
+        // Verify the result
+        verify_and_clear(image_1);
+
+        /* Thread Variant 3_3 - 2D decomposition of existing characters */
+        System.out.println("---------- Thread Variant 3_3 ----------");
+        threads_v3 = new ThreadVariant3[THREAD_NUM];
+
+        // Determine thread grid dimensions
+        int grid_size = (int) Math.ceil(Math.sqrt(THREAD_NUM));
+
+        // Decomposition and thread creation
+        for (int i = 0; i < THREAD_NUM; i++)
+        {
+            // Determine row and column position in the grid
+            int thread_row = i / grid_size;
+            int thread_col = i % grid_size;
+
+            // Divide rows among grid rows
+            int row_per_thread = (input_rows + grid_size - 1) / grid_size;
+            int row_start = thread_row * row_per_thread;
+            int row_end = Math.min((thread_row + 1) * row_per_thread, input_rows);
+
+            // Divide columns among grid columns
+            int col_per_thread = (input_cols + grid_size - 1) / grid_size;
+            int col_start = thread_col * col_per_thread;
+            int col_end = Math.min((thread_col + 1) * col_per_thread, input_cols);
+
+            // Create runnable class instance for 2D block
+            threads_v3[i] = new ThreadVariant3(row_start, row_end, 1, col_start, col_end, 1, image_1);
+
+            // Create a thread instance and run it
+            thread_instances[i] = new Thread(threads_v3[i]);
+            thread_instances[i].start();
+        }
+
+        // Wait for threads to finish
+        wait_for_threads(thread_instances);
+
+        // Consolidate thread results
+        for (int i = 0; i < THREAD_NUM; i++)
+        {
+            int[] result = threads_v3[i].get_results();
+            image_1.include_histogram(result);
+        }
+
+        // Display result
+        image_1.display_symbol_count();
+
+        // Verify the result
+        verify_and_clear(image_1);
+
+
+        // Debug to check if all results are fine
+        System.out.println("------------------------------");
+        System.out.println("All clear: " + all_clear);
+
     }
     public static void wait_for_threads(Thread[] threads)
     {
@@ -132,8 +223,15 @@ class Histogram
 
     public static void verify_and_clear(Image image)
     {
-        System.out.println("Results are correct: " + image.verify_thread_result());
+        // Verification and output
+        boolean success = image.verify_thread_result();
+        System.out.println("Results are correct: " + success);
         image.clear_parallel_histogram();
+
+        // Flag for all test success
+        if(!success)
+            all_clear = false;
     }
+
 }
 

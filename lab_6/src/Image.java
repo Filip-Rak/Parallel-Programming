@@ -125,7 +125,7 @@ public class Image
         for (int i = 0; i < SYMBOL_COUNT; i++)
         {
             char symbol = (char)(i + BEGIN_INDEX);
-            display_symbol_count(1, symbol, histogram_parallel[i]);
+            display_symbol_count(0, symbol, histogram_parallel[i]);
         }
     }
 

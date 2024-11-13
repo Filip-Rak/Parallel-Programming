@@ -18,7 +18,6 @@ public class ThreadVariant3 implements Runnable
     private final int col_stride;
 
     Image image_ref;
-    int thread_id;
 
     // Output
     int[] local_histogram;
@@ -26,7 +25,7 @@ public class ThreadVariant3 implements Runnable
     // Constructor
     // ---------------
     public ThreadVariant3(int row_start, int row_end, int row_stride,
-                          int col_start, int col_end, int col_stride, Image image_ref, int thread_id)
+                          int col_start, int col_end, int col_stride, Image image_ref)
     {
         // Row initialization
         this.row_start = row_start;
@@ -39,7 +38,6 @@ public class ThreadVariant3 implements Runnable
         this.col_stride = col_stride;
 
         this.image_ref = image_ref;
-        this.thread_id = thread_id;
 
         // Initialize local array for output storage
         int size = Image.get_symbol_count();
