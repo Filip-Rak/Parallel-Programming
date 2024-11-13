@@ -23,9 +23,10 @@ public class ThreadVariant2 implements Runnable
         // Fill parallel result
         image_ref.calc_histogram_symbol(start_index, end_index, index_stride);
 
+        // Display result on screen
         for (int i = start_index; i < end_index; i += index_stride)
         {
-            char symbol = (char) (start_index + Image.get_begin_index());
+            char symbol = (char) (i + Image.get_begin_index());
             image_ref.display_symbol_count(thread_id, symbol);
         }
     }
