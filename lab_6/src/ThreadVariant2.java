@@ -1,3 +1,7 @@
+// -------------------
+// Block decomposition for ASCII
+// -------------------
+
 public class ThreadVariant2 implements Runnable
 {
     // Attributes

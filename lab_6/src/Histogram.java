@@ -21,7 +21,7 @@ class Histogram
         int ascii_length = Image.get_symbol_count();
         int ascii_end_index = Image.get_begin_index() + ascii_length;
 
-        // Thread Variant 1 - Each ascii sign gets a thread
+        /* Thread Variant 1 - Each ascii sign gets a thread */
         System.out.println("---------- Thread Variant 1 ----------");
 
         // Create and start threads
@@ -46,7 +46,7 @@ class Histogram
         // Common arguments
         final int THREAD_NUM = 12;
 
-        // Thread Variant 2 - 1D Block Decomposition of ASCII
+        /* Thread Variant 2 - 1D Block Decomposition of ASCII */
         System.out.println("---------- Thread Variant 2 ----------");
 
         // Arrays for keeping track o threads
@@ -77,6 +77,8 @@ class Histogram
 
         // Verify the result
         verify_and_clear(image_1);
+
+        /* Thread Variant 3 - Cyclical row decomposition of existing characters */
 
     }
     public static void wait_for_threads(Thread[] threads)

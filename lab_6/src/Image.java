@@ -13,7 +13,7 @@ public class Image
     private final char[][] arr;
     private final char[] arr_symbols;
     private final int[] histogram;
-    private final int[] histogram_parrarel;
+    private final int[] histogram_parallel;
 
     // Constructor
     // ---------------
@@ -50,8 +50,8 @@ public class Image
         clear_histogram();
 
         // Make a separate array for comparisons
-        histogram_parrarel = new int[SYMBOL_COUNT];
-        System.arraycopy(histogram, 0, histogram_parrarel, 0, SYMBOL_COUNT);
+        histogram_parallel = new int[SYMBOL_COUNT];
+        System.arraycopy(histogram, 0, histogram_parallel, 0, SYMBOL_COUNT);
     }
 
     // Public Methods
@@ -65,7 +65,7 @@ public class Image
     public void clear_parallel_histogram()
     {
         for(int i = 0; i < SYMBOL_COUNT; i++)
-            histogram_parrarel[i] = 0;
+            histogram_parallel[i] = 0;
     }
 
     public void calculate_histogram()
@@ -115,7 +115,7 @@ public class Image
     public synchronized void display_symbol_count(long thread_id, char symbol)
     {
         int index = (int)symbol - BEGIN_INDEX;
-        int count = histogram_parrarel[index];
+        int count = histogram_parallel[index];
 
         display_symbol_count(thread_id, symbol, count);
     }
@@ -123,7 +123,7 @@ public class Image
     public void add_count_to_histogram(char symbol, int count)
     {
         int index = (int)symbol - BEGIN_INDEX;
-        histogram_parrarel[index] = count;
+        histogram_parallel[index] = count;
     }
 
     public void print_histogram()
@@ -145,20 +145,43 @@ public class Image
                 for (int symbol = symbol_start; symbol < symbol_end; symbol += symbol_stride)
                 {
                     if (arr[row][col] == arr_symbols[symbol])
-                        histogram_parrarel[symbol] += 1;
+                        histogram_parallel[symbol] += 1;
                 }
             }
         }
     }
+
 
     public void calc_histogram_symbol(int symbol_start, int symbol_end, int symbol_stride)
     {
         this.calc_histogram(0, size_n, 1, 0, size_m, 1, symbol_start, symbol_end, symbol_stride);
     }
 
+    public void calc_histogram_locally_on_thread(int start_row, int end_row, int row_stride,
+                                                 int start_col, int end_col, int col_stride, int[] local_histogram)
+    {
+        for (int row = start_row; row < end_row; row += row_stride)
+        {
+            for (int col = start_col; col < end_col; col += col_stride)
+            {
+                for (int symbol = 0; symbol < SYMBOL_COUNT; symbol += 1)
+                {
+                    if (arr[row][col] == arr_symbols[symbol])
+                        local_histogram[symbol] += 1;
+                }
+            }
+        }
+    }
+
+    public void include_histogram(int[] histogram_addition)
+    {
+        for(int i = 0; i < SYMBOL_COUNT; i++)
+            histogram_parallel[i] += histogram_addition[i];
+    }
+
     public boolean verify_thread_result()
     {
-        return Arrays.equals(histogram, histogram_parrarel);
+        return Arrays.equals(histogram, histogram_parallel);
     }
 
 
