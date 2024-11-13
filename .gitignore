@@ -55,3 +55,7 @@ dkms.conf
 # Misc
 *.pdf
 *.tgz
+
+lab_6/*
+!lab_6/src/
+
