@@ -58,4 +58,11 @@ public class ThreadVariant3 implements Runnable
         // Call method for local histogram computation
         image_ref.calc_histogram_locally_on_thread(row_start, row_end, row_stride, col_start, col_end, col_stride, local_histogram);
     }
+
+    // Getters
+    // ---------------
+    public int[] get_results()
+    {
+        return local_histogram;
+    }
 }

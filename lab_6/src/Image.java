@@ -120,6 +120,15 @@ public class Image
         display_symbol_count(thread_id, symbol, count);
     }
 
+    public void display_symbol_count()
+    {
+        for (int i = 0; i < SYMBOL_COUNT; i++)
+        {
+            char symbol = (char)(i + BEGIN_INDEX);
+            display_symbol_count(1, symbol, histogram_parallel[i]);
+        }
+    }
+
     public void add_count_to_histogram(char symbol, int count)
     {
         int index = (int)symbol - BEGIN_INDEX;
@@ -183,7 +192,6 @@ public class Image
     {
         return Arrays.equals(histogram, histogram_parallel);
     }
-
 
     // Static Methods
     // ---------------

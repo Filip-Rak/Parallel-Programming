@@ -9,10 +9,10 @@ class Histogram
         // Get size and create a histogram
         Scanner scanner = new Scanner(System.in);
         System.out.println("Image size: rows, columns");
-        int n = scanner.nextInt();
-        int m = scanner.nextInt();
+        int input_rows = scanner.nextInt();
+        int input_cols = scanner.nextInt();
 
-        Image image_1 = new Image(n, m);
+        Image image_1 = new Image(input_rows, input_cols);
         image_1.calculate_histogram();
         // image_1.print_histogram();
 
@@ -79,6 +79,40 @@ class Histogram
         verify_and_clear(image_1);
 
         /* Thread Variant 3 - Cyclical row decomposition of existing characters */
+        System.out.println("---------- Thread Variant 3 ----------");
+        ThreadVariant3[] threads_v3 = new ThreadVariant3[THREAD_NUM];
+
+        // Decomposition and thread creation
+        for (int i = 0; i < THREAD_NUM; i++)
+        {
+            // Cyclical row decomposition
+            int start_index = i;
+            int end_index = input_rows;
+            int stride = THREAD_NUM;
+
+            // create runnable class instance
+            threads_v3[i] = new ThreadVariant3(start_index, end_index, stride, 0, input_cols, 1, image_1, ids[i]);
+
+            // Create a thread instance and run it
+            thread_instances[i] = new Thread(threads_v3[i]);
+            thread_instances[i].start();
+        }
+
+        // Wait for threads to finish
+        wait_for_threads(thread_instances);
+
+        // Consolidate thread results
+        for (int i = 0; i < THREAD_NUM; i++)
+        {
+            int[] result = threads_v3[i].get_results();
+            image_1.include_histogram(result);
+        }
+
+        // Display result
+        image_1.display_symbol_count();
+
+        // Verify the result
+        verify_and_clear(image_1);
 
     }
     public static void wait_for_threads(Thread[] threads)
