@@ -173,11 +173,9 @@ public class Image
         {
             for (int col = start_col; col < end_col; col += col_stride)
             {
-                for (int symbol = 0; symbol < SYMBOL_COUNT; symbol += 1)
-                {
-                    if (arr[row][col] == arr_symbols[symbol])
-                        local_histogram[symbol] += 1;
-                }
+                char current_symbol = arr[row][col];
+                int symbol_index = current_symbol - Image.get_begin_index();
+                local_histogram[symbol_index]++;
             }
         }
     }
