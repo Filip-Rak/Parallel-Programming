@@ -7,7 +7,7 @@ class Histogram
 
     public static void main(String[] args)
     {
-        // --------------- Initial sequential histogram ---------------
+        // ---------- Initial sequential histogram ----------
 
         // Get size and create a histogram
         Scanner scanner = new Scanner(System.in);
@@ -26,7 +26,7 @@ class Histogram
         // Common arguments
         final int THREAD_NUM = 12;
 
-        // --------------- Exercises ---------------
+        // ---------- Exercises ----------
 
         // Thread Variant 1 - Each ascii sign gets a thread
         ex1(ascii_length, ascii_start_index, image_1);
@@ -41,9 +41,9 @@ class Histogram
         ex4(THREAD_NUM, input_cols, input_rows, image_1);
 
         // Thread Variant 3_3 - 2D decomposition of existing characters
-        ex5(THREAD_NUM, input_rows, input_cols, image_1);
+        ex5(input_rows, input_cols, image_1);
 
-        // --------------- Debug if fails occurred ---------------
+        // ---------- Debug if fails occurred ----------
         System.out.println("------------------------------");
         System.out.println("All clear: " + all_clear);
 
@@ -186,31 +186,62 @@ class Histogram
         verify_and_clear(image_ref);
     }
 
-    public static void ex5(int thread_num, int input_rows, int input_cols, Image image_ref)
+    public static void ex5(int input_rows, int input_cols, Image image_ref)
     {
-        System.out.println("---------- Thread Variant 3_3 ----------");
+        System.out.println("---------- Thread Variant 3_3 2D Grid Decomposition ----------");
+
+        // Calculate the optimal number of threads based on matrix dimensions
+        int target_threads = (int)Math.sqrt(input_rows * input_cols); // Start with the square root of total size
+        target_threads = Math.max(1, target_threads); // Ensure at least 1 thread
+
+        // Find the nearest smaller perfect square
+        int sqrt_threads = (int)Math.sqrt(target_threads);
+        int thread_num = sqrt_threads * sqrt_threads; // Ensure it's a perfect square
+
+        // System.out.println("Calculated thread_num: " + thread_num + " (sqrt_threads: " + sqrt_threads + ")");
+
+        // Compute rows and columns per block
+        int rows_per_block = (input_rows + sqrt_threads - 1) / sqrt_threads; // Block size for rows
+        int cols_per_block = (input_cols + sqrt_threads - 1) / sqrt_threads; // Block size for columns
+
         ThreadVariant3[] threads_v3 = new ThreadVariant3[thread_num];
         Thread[] thread_instances = new Thread[thread_num];
 
-        // Decomposition and thread creation
-        for (int i = 0; i < thread_num; i++)
+        int thread_id = 0;
+
+        // Create threads for a 2D grid
+        for (int row_block = 0; row_block < sqrt_threads; row_block++)
         {
-            // Cyclic row decomposition
-            int row_start = i;
-            int row_end = input_rows;
-            int row_stride = thread_num;
+            for (int col_block = 0; col_block < sqrt_threads; col_block++)
+            {
+                // Calculate the range of rows and columns for this thread
+                int row_start = row_block * rows_per_block;
+                int row_end = Math.min(row_start + rows_per_block, input_rows);
+                int col_start = col_block * cols_per_block;
+                int col_end = Math.min(col_start + cols_per_block, input_cols);
 
-            // Cyclic column decomposition
-            int col_start = i;
-            int col_end = input_cols;
-            int col_stride = thread_num;
+                // Skip threads with no valid range
+                if (row_start >= row_end || col_start >= col_end)
+                {
+                    System.out.println("Thread " + thread_id + " has no valid range to process. Skipping.");
+                    thread_id++;
+                    continue;
+                }
 
-            // Create runnable class instance for cyclic 2D decomposition
-            threads_v3[i] = new ThreadVariant3(row_start, row_end, row_stride, col_start, col_end, col_stride, image_ref);
+                // Create runnable class instance for this thread
+                threads_v3[thread_id] = new ThreadVariant3(row_start, row_end, 1, col_start, col_end, 1, image_ref);
 
-            // Create a thread instance and start it
-            thread_instances[i] = new Thread(threads_v3[i]);
-            thread_instances[i].start();
+                // Log ranges for debugging
+                /* System.out.println("Thread " + thread_id + " processing rows: " +
+                        row_start + " to " + (row_end - 1) + " and columns: " +
+                        col_start + " to " + (col_end - 1));*/
+
+                // Create and start the thread
+                thread_instances[thread_id] = new Thread(threads_v3[thread_id]);
+                thread_instances[thread_id].start();
+
+                thread_id++;
+            }
         }
 
         // Wait for threads to finish
@@ -219,8 +250,11 @@ class Histogram
         // Consolidate thread results
         for (int i = 0; i < thread_num; i++)
         {
-            int[] result = threads_v3[i].get_results();
-            image_ref.include_histogram(result);
+            if (threads_v3[i] != null)  // Avoid skipped threads
+            {
+                int[] result = threads_v3[i].get_results();
+                image_ref.include_histogram(result);
+            }
         }
 
         // Display result
@@ -229,6 +263,7 @@ class Histogram
         // Verify the result
         verify_and_clear(image_ref);
     }
+
 
     public static void wait_for_threads(Thread[] threads)
     {
