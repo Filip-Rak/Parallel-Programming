@@ -219,7 +219,7 @@ class Histogram
                 // Skip threads with no valid range
                 if (row_start >= row_end || col_start >= col_end)
                 {
-                    System.out.printf("Thread: %d has no valid range to process. Skipping...", thread_id);
+                    System.out.printf("Thread: %d has no valid range to process. Skipping...\n", thread_id);
                     thread_id++;
                     continue;
                 }
@@ -265,6 +265,10 @@ class Histogram
     {
         for (int i = 0; i < threads.length; i++)
         {
+            // Skip uninitialized threads
+            if (threads[i] == null)
+                continue;
+
             try
             {
                 threads[i].join();
