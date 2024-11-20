@@ -19,11 +19,11 @@ public class Main
         // Read user input
         Scanner input = new Scanner(System.in);
 
-        // System.out.print("dx: ");
-        // delta_x = input.nextDouble();
+        System.out.print("dx: ");
+        delta_x = input.nextDouble();
 
         // Sequential integral calculation
-        // ex1(x_start, x_end, delta_x);
+        ex1(x_start, x_end, delta_x);
 
         // Parallel integral computation with thread pool
         ex2(x_start, x_end, delta_x, thread_num);
@@ -32,7 +32,7 @@ public class Main
         ex4(x_start, x_end, delta_x, thread_num);
 
         // Parallel computation with ForkJoinPool
-        // ex3(thread_num);
+        ex3(thread_num);
     }
 
     // Exercises
@@ -145,7 +145,6 @@ public class Main
 
         // Wait for threads to finish execution
         executor.shutdown();
-
         try
         {
             boolean ignore =  executor.awaitTermination(1, TimeUnit.MINUTES);
