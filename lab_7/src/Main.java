@@ -1,10 +1,8 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 public class Main
 {
@@ -25,10 +23,10 @@ public class Main
         // delta_x = input.nextDouble();
 
         // Sequential integral calculation
-        ex1(x_start, x_end, delta_x);
+        // ex1(x_start, x_end, delta_x);
 
         // Parallel computation with thread pool
-        ex2(x_start, x_end, delta_x, thread_num);
+        // ex2(x_start, x_end, delta_x, thread_num);
 
         // Parallel computation with ForkJoinPool
         ex3(thread_num);
@@ -90,6 +88,32 @@ public class Main
 
     private static void ex3(int thread_num)
     {
-        
+        System.out.println("----- Parallel Merge Sort with For Join Pool -----");
+
+        // Create a random array
+        int arr_size = 10;
+        int min_num = 0;
+        int max_num = 100;
+
+        int[] arr = ThreadLocalRandom.current()
+                .ints(arr_size, min_num, max_num)
+                .toArray();
+
+        // Array size at which the calculation will be performed sequentially
+        int threshold = 2;
+
+        // Create Fork Join instance
+        try (ForkJoinPool pool = new ForkJoinPool(thread_num))
+        {
+            // Task for the pool
+            MergeSortTask task = new MergeSortTask(arr, threshold);
+
+            // Start threads and retrieve the result
+            int[] result = pool.invoke(task);
+
+            // Result printing
+            System.out.println("Input array: " + Arrays.toString(arr));
+            System.out.println("Sorting result: " + Arrays.toString(result));
+        }
     }
 }
