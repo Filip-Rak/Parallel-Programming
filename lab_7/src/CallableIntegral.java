@@ -31,10 +31,11 @@ public class CallableIntegral implements Callable<Double>
         {
             double x1 = x_start + i * delta_x;
             double x2 = x1 + delta_x;
-            integral += ((get_function(x1) + get_function(x2))/2.)* delta_x;
+            double avg = get_function(x1) + get_function(x2);
+            integral += avg / 2 * delta_x;
         }
 
-        // System.out.println("Partial integral: " + integral);
+        System.out.println("Partial integral: " + integral);
         return integral;
     }
 
