@@ -14,7 +14,7 @@ class Histogram
 
         // Get size and create a histogram
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Image size: rows, columns");
+        System.out.print("Image size -> rows, columns: ");
         int input_rows = scanner.nextInt();
         int input_cols = scanner.nextInt();
 
@@ -269,7 +269,6 @@ class Histogram
     {
         System.out.println("---------- Thread Variant 3_4 Thread Pool ----------");
         ThreadVariant3[] tasks = new ThreadVariant3[thread_num];
-
         ExecutorService executor = Executors.newFixedThreadPool(thread_num);
 
         // Decomposition and thread creation
