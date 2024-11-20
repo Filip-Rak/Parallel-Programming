@@ -105,7 +105,7 @@ public class Image
             return;
 
         // Print the count
-        System.out.print("Thread: " + thread_id + ": |" + symbol + "| [" + count + "]: ");
+        System.out.printf("Thread: %d: |%c| [%d]: ", thread_id, symbol, count);
         for (int i = 0; i < count; i++)
             System.out.print("=");
 

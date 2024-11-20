@@ -20,10 +20,8 @@ class Histogram
         // image_1.print_histogram();
 
         // Common thread arguments
-        int ascii_start_index = Image.get_begin_index();
-        int ascii_length = Image.get_symbol_count();
-
-        // Common arguments
+        final int ascii_start_index = Image.get_begin_index();
+        final int ascii_length = Image.get_symbol_count();
         final int THREAD_NUM = 12;
 
         // ---------- Exercises ----------
@@ -49,20 +47,19 @@ class Histogram
 
     }
 
+    // Exercise Methods
+    // ---------------
     public static void ex1(int ascii_length, int ascii_start_index, Image image_ref)
     {
         System.out.println("---------- Thread Variant 1 ----------");
 
         // Create and start threads
         ThreadVariant1[] threads_v1 = new ThreadVariant1[ascii_length];
-        int[] ids = new int[ascii_length];
 
         for (int i = 0; i < ascii_length; i++)
         {
             char symbol = (char)(ascii_start_index + i);
-            ids[i] = i;
-
-            threads_v1[i] = new ThreadVariant1(ids[i], symbol, image_ref);
+            threads_v1[i] = new ThreadVariant1(i, symbol, image_ref);
             threads_v1[i].start();
         }
 
@@ -77,10 +74,9 @@ class Histogram
     {
         System.out.println("---------- Thread Variant 2 ----------");
 
-        // Arrays for keeping track o threads
+        // Arrays for keeping track of threads
         ThreadVariant2[] threads_v2 = new ThreadVariant2[thread_num];
         Thread[] thread_instances = new Thread[thread_num];
-        int[] ids = new int[thread_num];
 
         // Create runnable classes and engage threads
         for (int i = 0; i < thread_num; i++)
@@ -90,10 +86,9 @@ class Histogram
             int start_index = (i * per_thread);
             int end_index = Math.min((i + 1) * per_thread, ascii_length);
             int index_stride = 1;
-            ids[i] = i;
 
             // Create runnable class instance
-            threads_v2[i] = new ThreadVariant2(start_index, end_index, index_stride, image_ref, ids[i]);
+            threads_v2[i] = new ThreadVariant2(start_index, end_index, index_stride, image_ref, i);
 
             // Create a thread instance and run it
             thread_instances[i] = new Thread(threads_v2[i]);
@@ -200,10 +195,11 @@ class Histogram
 
         // System.out.println("Calculated thread_num: " + thread_num + " (sqrt_threads: " + sqrt_threads + ")");
 
-        // Compute rows and columns per block
-        int rows_per_block = (input_rows + sqrt_threads - 1) / sqrt_threads; // Block size for rows
-        int cols_per_block = (input_cols + sqrt_threads - 1) / sqrt_threads; // Block size for columns
+        // Compute rows and columns per block with round up
+        int rows_per_block = (input_rows + sqrt_threads - 1) / sqrt_threads;
+        int cols_per_block = (input_cols + sqrt_threads - 1) / sqrt_threads;
 
+        // Allocate memory for threads
         ThreadVariant3[] threads_v3 = new ThreadVariant3[thread_num];
         Thread[] thread_instances = new Thread[thread_num];
 
@@ -214,7 +210,7 @@ class Histogram
         {
             for (int col_block = 0; col_block < sqrt_threads; col_block++)
             {
-                // Calculate the range of rows and columns for this thread
+                // Calculate the range of rows and columns for each thread
                 int row_start = row_block * rows_per_block;
                 int row_end = Math.min(row_start + rows_per_block, input_rows);
                 int col_start = col_block * cols_per_block;
@@ -223,7 +219,7 @@ class Histogram
                 // Skip threads with no valid range
                 if (row_start >= row_end || col_start >= col_end)
                 {
-                    System.out.println("Thread " + thread_id + " has no valid range to process. Skipping.");
+                    System.out.printf("Thread: %d has no valid range to process. Skipping...", thread_id);
                     thread_id++;
                     continue;
                 }
@@ -234,12 +230,11 @@ class Histogram
                 // Log ranges for debugging
                 /* System.out.println("Thread " + thread_id + " processing rows: " +
                         row_start + " to " + (row_end - 1) + " and columns: " +
-                        col_start + " to " + (col_end - 1));*/
+                        col_start + " to " + (col_end - 1)); */
 
                 // Create and start the thread
                 thread_instances[thread_id] = new Thread(threads_v3[thread_id]);
                 thread_instances[thread_id].start();
-
                 thread_id++;
             }
         }
@@ -264,7 +259,8 @@ class Histogram
         verify_and_clear(image_ref);
     }
 
-
+    // Helper Methods
+    // ---------------
     public static void wait_for_threads(Thread[] threads)
     {
         for (int i = 0; i < threads.length; i++)

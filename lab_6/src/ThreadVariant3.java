@@ -17,6 +17,7 @@ public class ThreadVariant3 implements Runnable
     private final int col_end;
     private final int col_stride;
 
+    // References
     Image image_ref;
 
     // Output
@@ -37,6 +38,7 @@ public class ThreadVariant3 implements Runnable
         this.col_end = col_end;
         this.col_stride = col_stride;
 
+        // Save reference
         this.image_ref = image_ref;
 
         // Initialize local array for output storage
