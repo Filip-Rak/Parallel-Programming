@@ -4,15 +4,16 @@ public class CallableIntegral implements Callable<Double>
 {
     private final double delta_x;
     private final double x_start;
-    private double x_end;
     private final int steps;
 
     public CallableIntegral(double x_start, double x_end, double delta_x)
     {
+        double range = x_end - x_start;
+
         this.x_start = x_start;
-        this.x_end = x_end;
-        this.steps = (int) Math.ceil((x_end-x_start)/delta_x);
-        this.delta_x = (x_end-x_start)/ steps;
+        this.steps = (int)Math.ceil(range / delta_x);
+        this.delta_x = range / steps;
+
         System.out.println("Creating an instance of CallableIntegral");
         System.out.println("x_start = " + x_start + ", x_end = " + x_end + ", N = " + steps);
         System.out.println("delta_x requested = " + delta_x + ", delta_x final = " + this.delta_x);

@@ -25,11 +25,14 @@ public class Main
         // Sequential integral calculation
         // ex1(x_start, x_end, delta_x);
 
-        // Parallel computation with thread pool
-        // ex2(x_start, x_end, delta_x, thread_num);
+        // Parallel integral computation with thread pool
+        ex2(x_start, x_end, delta_x, thread_num);
+
+        // Parallel integral computation with Runnable interface
+        ex4(x_start, x_end, delta_x, thread_num);
 
         // Parallel computation with ForkJoinPool
-        ex3(thread_num);
+        // ex3(thread_num);
     }
 
     // Exercises
@@ -115,5 +118,51 @@ public class Main
             System.out.println("Input array: " + Arrays.toString(arr));
             System.out.println("Sorting result: " + Arrays.toString(result));
         }
+    }
+
+    private static void ex4(double x_start, double x_end, double delta_x, int thread_num)
+    {
+        System.out.println("----- Parallel integral computation with Runnable interface -----");
+
+        // Create thread pool
+        ExecutorService executor = Executors.newFixedThreadPool(thread_num);
+
+        // Task list
+        RunnableIntegral[] tasks = new RunnableIntegral[thread_num];
+
+        // Work distribution
+        double range_per_thread = (x_end - x_start) / thread_num;
+        for (int i = 0; i < thread_num; i++)
+        {
+            // Prepare the task
+            double local_start = x_start + range_per_thread * i;
+            double local_end = local_start + range_per_thread;
+            tasks[i] = new RunnableIntegral(local_start, local_end, delta_x);
+
+            // Call the executor
+            executor.execute(tasks[i]);
+        }
+
+        // Wait for threads to finish execution
+        executor.shutdown();
+
+        try
+        {
+            boolean ignore =  executor.awaitTermination(1, TimeUnit.MINUTES);
+        }
+        catch (InterruptedException exception)
+        {
+            System.out.println("Exception: " + exception);
+        }
+
+        // Consolidate results
+        double total_integral = 0.0;
+        for (int i = 0; i < thread_num; i++)
+        {
+            total_integral += tasks[i].get_result();
+        }
+
+        // Print the result
+        System.out.printf("Final integral: %f\n", total_integral);
     }
 }
