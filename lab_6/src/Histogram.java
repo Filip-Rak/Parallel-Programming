@@ -1,4 +1,7 @@
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 class Histogram
@@ -15,9 +18,9 @@ class Histogram
         int input_rows = scanner.nextInt();
         int input_cols = scanner.nextInt();
 
-        Image image_1 = new Image(input_rows, input_cols);
-        image_1.calculate_histogram();
-        // image_1.print_histogram();
+        Image image = new Image(input_rows, input_cols);
+        image.calculate_histogram();
+        // image.print_histogram();
 
         // Common thread arguments
         final int ascii_start_index = Image.get_begin_index();
@@ -27,19 +30,22 @@ class Histogram
         // ---------- Exercises ----------
 
         // Thread Variant 1 - Each ascii sign gets a thread
-        ex1(ascii_length, ascii_start_index, image_1);
+        ex1(ascii_length, ascii_start_index, image);
 
         // Thread Variant 2 - 1D Block Decomposition of ASCII
-        ex2(ascii_length, THREAD_NUM, image_1);
+        ex2(ascii_length, THREAD_NUM, image);
 
         // Thread Variant 3_1 - Cyclical row decomposition of existing characters
-        ex3(THREAD_NUM, input_rows, input_cols, image_1);
+        ex3(THREAD_NUM, input_rows, input_cols, image);
 
         // Thread Variant 3_2 - Block column decomposition of existing characters
-        ex4(THREAD_NUM, input_cols, input_rows, image_1);
+        ex4(THREAD_NUM, input_cols, input_rows, image);
 
         // Thread Variant 3_3 - 2D decomposition of existing characters
-        ex5(input_rows, input_cols, image_1);
+        ex5(input_rows, input_cols, image);
+
+        // Thread Variant 3_4 - Computation using Thread Pool
+        ex6(THREAD_NUM, input_cols, input_rows, image);
 
         // ---------- Debug if fails occurred ----------
         System.out.println("------------------------------");
@@ -49,7 +55,7 @@ class Histogram
 
     // Exercise Methods
     // ---------------
-    public static void ex1(int ascii_length, int ascii_start_index, Image image_ref)
+    private static void ex1(int ascii_length, int ascii_start_index, Image image_ref)
     {
         System.out.println("---------- Thread Variant 1 ----------");
 
@@ -70,7 +76,7 @@ class Histogram
         verify_and_clear(image_ref);
     }
 
-    public static void ex2(int ascii_length, int thread_num, Image image_ref)
+    private static void ex2(int ascii_length, int thread_num, Image image_ref)
     {
         System.out.println("---------- Thread Variant 2 ----------");
 
@@ -102,7 +108,7 @@ class Histogram
         verify_and_clear(image_ref);
     }
 
-    public static void ex3(int thread_num, int input_rows, int input_cols, Image image_ref)
+    private static void ex3(int thread_num, int input_rows, int input_cols, Image image_ref)
     {
         System.out.println("---------- Thread Variant 3_1 ----------");
         ThreadVariant3[] threads_v3 = new ThreadVariant3[thread_num];
@@ -141,7 +147,7 @@ class Histogram
         verify_and_clear(image_ref);
     }
 
-    public static void ex4(int thread_num, int input_cols, int input_rows, Image image_ref)
+    private static void ex4(int thread_num, int input_cols, int input_rows, Image image_ref)
     {
         System.out.println("---------- Thread Variant 3_2 ----------");
         ThreadVariant3[] threads_v3 = new ThreadVariant3[thread_num];
@@ -156,7 +162,7 @@ class Histogram
             int end_index = Math.min((i + 1) * per_thread, input_cols);
             int index_stride = 1;
 
-            // create runnable class instance
+            // Create runnable class instance
             threads_v3[i] = new ThreadVariant3(0, input_rows , 1, start_index, end_index, index_stride, image_ref);
 
             // Create a thread instance and run it
@@ -181,7 +187,7 @@ class Histogram
         verify_and_clear(image_ref);
     }
 
-    public static void ex5(int input_rows, int input_cols, Image image_ref)
+    private static void ex5(int input_rows, int input_cols, Image image_ref)
     {
         System.out.println("---------- Thread Variant 3_3 2D Grid Decomposition ----------");
 
@@ -259,9 +265,54 @@ class Histogram
         verify_and_clear(image_ref);
     }
 
+    private static void ex6(int thread_num, int input_cols, int input_rows, Image image_ref)
+    {
+        System.out.println("---------- Thread Variant 3_4 Thread Pool ----------");
+        ThreadVariant3[] tasks = new ThreadVariant3[thread_num];
+
+        ExecutorService executor = Executors.newFixedThreadPool(thread_num);
+
+        // Decomposition and thread creation
+        for (int i = 0; i < thread_num; i++)
+        {
+            // Block column decomposition
+            int per_thread = (input_cols + thread_num - 1) / thread_num;
+            int start_index = (i * per_thread);
+            int end_index = Math.min((i + 1) * per_thread, input_cols);
+            int index_stride = 1;
+
+            // Create runnable class instance
+            tasks[i] = new ThreadVariant3(0, input_rows , 1, start_index, end_index, index_stride, image_ref);
+            executor.execute(tasks[i]);
+        }
+
+        // Wait for threads to finish execution
+        executor.shutdown();
+        try
+        {
+            boolean ignore =  executor.awaitTermination(1, TimeUnit.MINUTES);
+        }
+        catch (InterruptedException exception)
+        {
+            System.out.println("Exception: " + exception);
+        }
+
+        // Consolidate thread results
+        for (int i = 0; i < thread_num; i++)
+        {
+            int[] result = tasks[i].get_results();
+            image_ref.include_histogram(result);
+        }
+
+        // Display result
+        image_ref.display_symbol_count();
+
+        // Verify the result
+        verify_and_clear(image_ref);
+    }
     // Helper Methods
     // ---------------
-    public static void wait_for_threads(Thread[] threads)
+    private static void wait_for_threads(Thread[] threads)
     {
         for (int i = 0; i < threads.length; i++)
         {
@@ -280,7 +331,7 @@ class Histogram
         }
     }
 
-    public static void verify_and_clear(Image image)
+    private static void verify_and_clear(Image image)
     {
         // Verification and output
         boolean success = image.verify_thread_result();
