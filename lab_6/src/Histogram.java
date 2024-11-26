@@ -309,6 +309,7 @@ class Histogram
         // Verify the result
         verify_and_clear(image_ref);
     }
+
     // Helper Methods
     // ---------------
     private static void wait_for_threads(Thread[] threads)

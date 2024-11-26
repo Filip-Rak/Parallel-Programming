@@ -11,14 +11,13 @@ public class Main
     public static void main(String[] args)
     {
         // Common arguments
-        double x_start = 0;
+        double x_start = 0.0;
         double x_end = Math.PI;
         double delta_x = 0.1;
         int thread_num = 6;
 
         // Read user input
         Scanner input = new Scanner(System.in);
-
         System.out.print("dx: ");
         delta_x = input.nextDouble();
 
