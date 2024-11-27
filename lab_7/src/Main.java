@@ -90,7 +90,7 @@ public class Main
 
     private static void ex3(int thread_num)
     {
-        System.out.println("----- Parallel Merge Sort with For Join Pool -----");
+        System.out.println("----- Parallel Merge Sort with Fork Join Pool -----");
 
         // Create a random array
         int arr_size = 10;

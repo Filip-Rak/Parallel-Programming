@@ -14,9 +14,9 @@ public class CallableIntegral implements Callable<Double>
         this.steps = (int)Math.ceil(range / delta_x);
         this.delta_x = range / steps;
 
-        System.out.println("Creating an instance of CallableIntegral");
-        System.out.println("x_start = " + x_start + ", x_end = " + x_end + ", N = " + steps);
-        System.out.println("delta_x requested = " + delta_x + ", delta_x final = " + this.delta_x);
+        // System.out.println("Creating an instance of CallableIntegral");
+        // System.out.println("x_start = " + x_start + ", x_end = " + x_end + ", N = " + steps);
+        // System.out.println("delta_x requested = " + delta_x + ", delta_x final = " + this.delta_x);
 
     }
 
@@ -36,7 +36,7 @@ public class CallableIntegral implements Callable<Double>
             integral += avg / 2 * delta_x;
         }
 
-        System.out.println("Partial integral: " + integral);
+        // System.out.println("Partial integral: " + integral);
         return integral;
     }
 
