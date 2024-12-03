@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <math.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 // Data Structs
 // -------------------
@@ -78,7 +79,7 @@ void* calka_fragment_petli_w(void* arg)
 
 // Exportable Functions
 // -------------------
-double calka_zrownoleglenie_petli(double a, double b, double dx, int thread_num)
+double calka_zrownoleglenie_petli(double a, double b, double dx, int thread_num, bool cyclic)
 {
 
   int N = ceil((b - a) / dx);
@@ -97,11 +98,12 @@ double calka_zrownoleglenie_petli(double a, double b, double dx, int thread_num)
   // Tworzenie wątków i struktur danych
   for (int i = 0; i < thread_num; i++)
   {
-      // Cyclic partitioning 
-      // args[i] = cyclic_partitioning(i, N, thread_num);
-
-      // Block partitioning 
-      args[i] = block_partitioning(i, N, thread_num);
+      if (cyclic)
+        args[i] = cyclic_partitioning(i, N, thread_num);
+      else 
+      {
+        args[i] = block_partitioning(i, N, thread_num);
+      }
 
       // Independent of partitioning model
       args[i].c_args = &c_args;

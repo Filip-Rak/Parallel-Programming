@@ -5,8 +5,8 @@
 
 #include "pomiar_czasu.h"
 
-#define SIZE 100000000
-#define THREAD_NUM 4
+#define SIZE 1000000
+#define THREAD_NUM 2
 
 pthread_mutex_t muteks; 
 pthread_t threads[THREAD_NUM];
