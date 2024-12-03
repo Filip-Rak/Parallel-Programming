@@ -1,14 +1,21 @@
 #ifndef _czytelnia_
 #define _czytelnia_
 
+#include<stdlib.h>
+#include<stdio.h>
+#include<unistd.h>
+#include<pthread.h>
+#include<stdbool.h>
+
 /*** Definicje typow zmiennych ***/
 typedef struct 
 {
   int l_p; // liczba piszacych
   int l_c; // liczba czytajacych
-  pthread_mutex_t mutex; // Muteks do ochrony sekcji krytycznych
-  pthread_cond_t readers; // Zmienna warunku dla czytelnikow
-  pthread_cond_t writers; // Zmienna warunku dla pisarzy
+  pthread_mutex_t mutex;
+  pthread_cond_t readers;
+  pthread_cond_t writers;
+  bool closed_for_readers;
 } cz_t;
 
 /*** Deklaracje procedur interfejsu ***/
