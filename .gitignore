@@ -63,3 +63,6 @@ lab_6/*
 lab_7/*
 !lab_7/src/
 
+lab_8/java/*
+!lab_8/java/src/
+
