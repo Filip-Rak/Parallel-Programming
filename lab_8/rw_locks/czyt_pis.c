@@ -9,8 +9,7 @@ void *funkcja_czytelnika( void *);
 void *funkcja_pisarza( void *);
 
 
-int main()
-{
+int main(){
   
   int i;
   pthread_t pisarze[5], czytelnicy[10];
@@ -34,8 +33,7 @@ int main()
   
 }
 
-void *funkcja_czytelnika( void * arg)
-{
+void *funkcja_czytelnika( void * arg){
   
   cz_t* cz_p = (cz_t *)arg;
   

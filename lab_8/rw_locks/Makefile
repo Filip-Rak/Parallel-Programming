@@ -1,7 +1,7 @@
 # prosty Makefile dla prostych programow
 
 # nazwa pliku z kodem wykonywalnym
-NAZWA = czyt_pis.out
+NAZWA = czyt_pis
 
 # kompilator C
 CC = gcc
@@ -11,7 +11,7 @@ LD = gcc
 AR = ar -ru
 
 # opcje kompilacji
-CFL = -pthread -DERROR_DEBUG
+CFL = -pthread
 LDFL = -pthread
 # katalogi z bibliotekami i dolaczane biblioteki
 LIB = -L. -lm
