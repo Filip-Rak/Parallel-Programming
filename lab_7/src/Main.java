@@ -54,10 +54,10 @@ public class Main
         ExecutorService executor = Executors.newFixedThreadPool(thread_num);
 
         // Distribute work
-        double range = (x_end - x_start) / thread_num;
+        double range = (x_end - x_start) / (thread_num * 2);
         List<Future<Double>> results = new ArrayList<>();
 
-        for(int i = 0; i < thread_num; i++)
+        for(int i = 0; i < thread_num * 2; i++)
         {
             double local_start = x_start + range * i;
             double local_end = local_start + range;

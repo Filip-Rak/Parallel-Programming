@@ -1,7 +1,7 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 
 class Histogram
@@ -25,7 +25,7 @@ class Histogram
         // Common thread arguments
         final int ascii_start_index = Image.get_begin_index();
         final int ascii_length = Image.get_symbol_count();
-        final int THREAD_NUM = 12;
+        final int THREAD_NUM = 6;
 
         // ---------- Exercises ----------
 
@@ -46,6 +46,9 @@ class Histogram
 
         // Thread Variant 3_4 - Computation using Thread Pool
         ex6(THREAD_NUM, input_cols, input_rows, image);
+
+        // Thread Variant 4 - Computation using Thread Pool and Future
+        ex7(THREAD_NUM, input_cols, input_rows, image);
 
         // ---------- Debug if fails occurred ----------
         System.out.println("------------------------------");
@@ -301,6 +304,52 @@ class Histogram
         {
             int[] result = tasks[i].get_results();
             image_ref.include_histogram(result);
+        }
+
+        // Display result
+        image_ref.display_symbol_count();
+
+        // Verify the result
+        verify_and_clear(image_ref);
+    }
+
+    private static void ex7(int thread_num, int input_cols, int input_rows, Image image_ref)
+    {
+        System.out.println("---------- Thread Variant 4 Thread Pool with Future ----------");
+        ExecutorService executor = Executors.newFixedThreadPool(thread_num);
+
+        // Future objects for results
+        List<Future<int[]>> results = new ArrayList<>();
+
+        // Decomposition and thread creation
+        for (int i = 0; i < thread_num; i++)
+        {
+            // Block column decomposition
+            int per_thread = (input_cols + thread_num - 1) / thread_num;
+            int start_index = (i * per_thread);
+            int end_index = Math.min((i + 1) * per_thread, input_cols);
+            int index_stride = 1;
+
+            // Create callable class instance
+            ThreadVariant4 task = new ThreadVariant4(0, input_rows , 1, start_index, end_index, index_stride, image_ref);
+            results.add(executor.submit(task));
+        }
+
+        // Tell executor to wrap up
+        executor.shutdown();
+
+        // Consolidate results
+        try
+        {
+            for (Future<int[]> result : results)
+            {
+                 int[] local_hist = result.get();
+                 image_ref.include_histogram(local_hist);
+            }
+        }
+        catch (InterruptedException | ExecutionException exception)
+        {
+            System.out.println("Exception: " + exception);
         }
 
         // Display result
