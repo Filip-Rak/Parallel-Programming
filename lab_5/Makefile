@@ -1,7 +1,7 @@
 CCOMP = gcc
 LOADER = gcc
 
-#OPT = -g -DDEBUG # For debugging
+# OPT = -g -DDEBUG # For debugging
 OPT = -O3 -fopenmp -fPIE # For time measurement and position-independent code
 
 INC = -I./include

@@ -1,0 +1,49 @@
+Laboratorium 5 - zagadnienia:
+
+------------------------------------3.0-----------------------------------------
+
+- dyskusja na temat dwóch podejść do zrównoleglenia programu suma (tablica, zmienna globalna),
+
+- pomiar czasu dla wersji sekwencyjnej i równoległej sumy tablicy (1, 2 (jeśli wystarczy czasy na końcu zajęć dla 4) wątki, wielkość tablicy 1 000 i 1 000 000) wersja -g, O3, wyniki zebrane w jednym miejscu,
+
+- uzupełnienie wersji sekwencyjnej obliczającej całkę, testy dokładności rozwiązania dla różnych dx (np. 0.1, 0.01, 0.0001,  0.00001,  0.0000001),
+
+------------------------------------3.5-----------------------------------------
+
+- zrównoleglenie kodu całka z wykorzystaniem wzorca zrównoleglenia pętli (dzielimy N iteracji, pomiędzy wątki, iteracje do obliczenia wyznaczamy na podstawie id_wątku), wariant podziału iteracji cykliczny,
+
+------------------------------------4.0-----------------------------------------
+
+- zrównoleglenie kodu całka z wykorzystaniem wzorca zrównoleglenia pętli (dzielimy N iteracji, pomiędzy wątki), wariant podziału iteracji blokowy,
+
+------------------------------------4.5-----------------------------------------
+
+- zrównoleglenie kodu całka z wykorzystaniem wzorca dekompozycji w dziedzinie problemu (dzielimy obszar A - B, pomiędzy wątki), zakresy zadań do realizacji przesyłamy przy użyciu struktury (obiekty struktury z zakresami całkowania uzupełniamy w main),
+
+------------------------------------5.0-----------------------------------------
+
+- wykorzystanie funkcji pthread_exit do zwrócenia wyniku (dynamiczna alokację zmiennej, przesłanie jej adresu, następnie w main zwolnienie pamięci),
+
+- dodatkowe nie obowiązkowe (optymalizacja obliczania całki)
+
+Pomoce naukowe:
+
+    Pthreads (https://man7.org/linux/man-pages/man7/pthreads.7.html)
+    Pthreads kurs 1 (https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html)
+    Pthreads kurs 2 (https://hpc-tutorials.llnl.gov/posix/)
+
+Szczegóły w dołączonej instrukcji do ćwiczenia.
+
+Po wykonaniu ćwiczenia pliki z zadaniem:
+
+    pthreads_calka.c
+    dodatkowe pliki z kodem utworzone w ramach ćwiczenia
+    niesformatowane wyniki (uzyskane podczas testów wydruki na ekran)
+
+Szczegóły znajdują się w dołączonym pliku z instrukcją. Wszystkie instrukcje do ćwiczeń znajdują się na
+
+stronie: http://ww1.metal.agh.edu.pl/~banas/PR/PR.html
+
+Zakres do testu:
+
+podział iteracji cykliczny/blokowy dla pętli 1D/2D.

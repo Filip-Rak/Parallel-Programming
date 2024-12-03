@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 #include <math.h>
 #include "pomiar_czasu.h"
 
@@ -9,7 +10,7 @@
 // double funkcja (double x );
 double funkcja (double x ){ return( sin(x) ); }
 double calka_sekw(double a, double b, double dx);
-double calka_zrownoleglenie_petli(double a, double b, double dx, int l_w);
+double calka_zrownoleglenie_petli(double a, double b, double dx, int l_w, bool cyclic);
 double calka_dekompozycja_obszaru(double a, double b, double dx, int l_w);
 
 int main( int argc, char *argv[] )
@@ -40,10 +41,17 @@ int main( int argc, char *argv[] )
   printf("\tCzas wykonania %lf. \n\tObliczona całka = %.15lf\n", t1, calka);
 
   t1 = czas_zegara();
-  calka = calka_zrownoleglenie_petli(a, b, dx, l_w);
+  calka = calka_zrownoleglenie_petli(a, b, dx, l_w, true);
 
   t1 = czas_zegara() - t1;
-  printf("Zrownoleglenie petli:\n");
+  printf("Zrownoleglenie petli (cykliczne):\n");
+  printf("\tCzas wykonania %lf. \n\tObliczona całka = %.15lf\n", t1, calka);
+
+  t1 = czas_zegara();
+  calka = calka_zrownoleglenie_petli(a, b, dx, l_w, false);
+
+  t1 = czas_zegara() - t1;
+  printf("Zrownoleglenie petli (blokowe):\n");
   printf("\tCzas wykonania %lf. \n\tObliczona całka = %.15lf\n", t1, calka);
 
   t1 = czas_zegara();
