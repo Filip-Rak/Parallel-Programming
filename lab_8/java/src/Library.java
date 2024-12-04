@@ -13,13 +13,11 @@ public class Library
     private int writer_count = 0;   // Instead of boolean for error checking
 
     private final int max_readers;
-    private final int max_writers;
 
     /* Constructor */
-    public Library(int max_readers, int max_writers)
+    public Library(int max_readers)
     {
         this.max_readers = max_readers;
-        this.max_writers = max_writers;
     };
 
     /* Public Methods */
