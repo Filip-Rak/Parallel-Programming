@@ -27,7 +27,5 @@ public class Task implements Runnable
             barrier.await();
         }
         catch (InterruptedException ignore) {}
-
-
     }
 }

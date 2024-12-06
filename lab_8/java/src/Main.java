@@ -3,8 +3,8 @@ public class Main
     /* Main Function */
     public static void main(String[] args)
     {
-        // ex1();
-        ex2();
+        ex1();
+        // ex2();
     }
 
     /* Exercises */
