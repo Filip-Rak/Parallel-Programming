@@ -29,7 +29,18 @@
 	-std=c17: specyfikuje standard C
 
 
-OpenMP:
+# OpenMP:
+
+	- omp_get_max_threads(): zwraca maksymalną ilość wątków
+	- omp_get_thread_num(): zwraca numer wywołującego wątku
+	- omp_set_nested(val): pozwala na zrównoleglenie pętli w pętli
+		- val = 1: true
+		- val = 0: false
+
+Ustawianie liczby wątków:
+	- export OMP_NUM_THREADS=4 (terminal)
+	- klauzula #pragma omp num_threads(4)
+	- funkcja omp_set_num_threads(4)
 
 #pragma omp:
 	- parallel for: zrównoleglenie pętli
@@ -52,6 +63,7 @@ OpenMP:
 			- dynamic: dynamiczny podział. Wątek który skończył swoją pracę dostaje kolejny zestaw. Defaultowo 1
 		number: wielkość zestawu
 	- ordered{ code }: sekcja w pętli, która będzie synchronizowana pomiędzy wątkami. Pętla musi mieć klauzulę ordered. Możliwe, że nawias musi być blokowy Allmana
+	- critical: sekcja krytyczna
 		
 		
 		
