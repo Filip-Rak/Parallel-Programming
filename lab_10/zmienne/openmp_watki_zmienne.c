@@ -26,42 +26,45 @@ int main(){
   
 #pragma omp parallel default(none) shared(a_shared, e_atomic) private(b_private) firstprivate(c_firstprivate)
   {
-    int i;
-    int d_local_private;
-    d_local_private = a_shared + c_firstprivate;
+    int d_local_private = a_shared + c_firstprivate;
 
     // Zainicjuj by byla wszedzie taka sama
     b_private = 100;
     
     // Oblicz sumy lokalnie
-    for(i=0;i<10;i++)
+    for(int i=0;i<10;i++)
         c_firstprivate += omp_get_thread_num();    
 
     int local_e = 0;
-    for(i=0;i<10;i++)
+    for(int i=0;i<10;i++)
       local_e += omp_get_thread_num();
 
+    int local_a = 0;
+    for(int i=0;i<10;i++)
+        local_a += 1; 
+
     // Specjalne traktowanie dla zmiennej atomic
+    // Zaleznosc Write After Write
+    // Wiele watkow probowalo zapisac do e_atomic w tym samym czasie
     #pragma omp atomic
     e_atomic += local_e;
 
-    int local_a = 0;
-    for(i=0;i<10;i++)
-        local_a += 1; 
-
     // Przed wypisem zaczekaj az kazdy watek skonczy prace
-    // Barriera rowniez zapewni ednoznaczonsc zmiennej d
+    // Eliminacja Write After Read
+    // a_shared moze byc rozne przy zapisie do d_local_pribae
     #pragma omp barrier
 
     #pragma omp critical
     {
         // Dodaj do zmiennych wspoldzielonych
+        // Elimiznacja aleznosci WAW
+        // Watki w tym samym czasie nadpisywaly zmienna a_shared
         a_shared += local_a;
 
         // Wypisz dane
-        printf("\nw obszarze równoległym: aktualna liczba watkow %d, moj ID %d\n",
-            omp_get_num_threads(), omp_get_thread_num());
-        
+        // Watki mogly jednoczesnie wypisywac dane na konsole co 
+        // mogloby prowadzic do nieczytelnych wynikow
+        printf("\nw obszarze równoległym: aktualna liczba watkow %d, moj ID %d\n",omp_get_num_threads(), omp_get_thread_num());
         printf("\ta_shared \t= %d\n", a_shared);
         printf("\tb_private \t= %d\n", b_private);
         printf("\tc_firstprivate \t= %d\n", c_firstprivate);
