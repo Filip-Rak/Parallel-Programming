@@ -133,7 +133,7 @@ double bin_search_max(
 
 /*** single task for parallel binary search (array not sorted) - openmp ***/
 #define max_level 4
-#define threshold 100
+#define threshold 30
 
 double bin_search_max_task(
   double* A,   
@@ -149,31 +149,10 @@ double bin_search_max_task(
     }
 
     // Przeszukaj liniowo/sekwencyjnie jezeli tablica jest zbyt mala
-    if ((k - p + 1) <= threshold) 
+    // lub osiagnieto limit glebokosci
+    if ((k - p + 1) <= threshold || level >= max_level) 
     {
-        double local_max = A[p];
-        for (int i = p + 1; i <= k; i++) 
-        {
-            if (A[i] > local_max) 
-            {
-                local_max = A[i];
-            }
-        }
-        return local_max;
-    }
-
-    // Osiagnieto maksymalny poziom - szukaj sekwencyjnie
-    if (level >= max_level) 
-    {
-        double local_max = A[p];
-        for (int i = p + 1; i <= k; i++) 
-        {
-            if (A[i] > local_max) 
-            {
-                local_max = A[i];
-            }
-        }
-        return local_max;
+        return search_max(A, p, k);
     }
 
     // Podziel przedzial na dwie czesci

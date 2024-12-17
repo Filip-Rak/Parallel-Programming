@@ -5,7 +5,7 @@
 
 #include "search_max_openmp.h"
 
-#define WYMIAR 100000000
+#define WYMIAR 5e8
 #define ROZMIAR WYMIAR
 
 
