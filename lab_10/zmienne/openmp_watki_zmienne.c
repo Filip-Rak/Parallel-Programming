@@ -2,31 +2,40 @@
 #include<stdio.h>
 #include<omp.h>
 
-int main(){
+int main()
+{
   
 #ifdef   _OPENMP
   printf("Kompilator rozpoznaje dyrektywy OpenMP\n");
 #endif
 
-  int liczba_watkow;
+    int liczba_watkow;
   
-  int a_shared = 1;
-  int b_private = 2;
-  int c_firstprivate = 3;
-  int e_atomic=5;
-  
-  
-  printf("przed wejsciem do obszaru rownoleglego -  nr_threads %d, thread ID %d\n",
-	 omp_get_num_threads(), omp_get_thread_num());
-  printf("\ta_shared \t= %d\n", a_shared);
-  printf("\tb_private \t= %d\n", b_private);
-  printf("\tc_firstprivate \t= %d\n", c_firstprivate);
-  printf("\te_atomic \t= %d\n", e_atomic);
+    int a_shared = 1;
+    int b_private = 2;
+    int c_firstprivate = 3;
+    int e_atomic = 5;
     
+    // Utworzenie i objecte zmiennej f dyrektywa threadprivate
+    static int f_threadprivate;
+    #pragma omp threadprivate(f_threadprivate)
+  
+    printf("przed wejsciem do obszaru rownoleglego -  nr_threads %d, thread ID %d\n", omp_get_num_threads(), omp_get_thread_num());
+    printf("\ta_shared \t= %d\n", a_shared);
+    printf("\tb_private \t= %d\n", b_private);
+    printf("\tc_firstprivate \t= %d\n", c_firstprivate);
+    printf("\te_atomic \t= %d\n", e_atomic);
+
+    omp_set_num_threads(5);
+
+    /* Pierszy Blok Rownolegly */  
   
 #pragma omp parallel default(none) shared(a_shared, e_atomic) private(b_private) firstprivate(c_firstprivate)
   {
     int d_local_private = a_shared + c_firstprivate;
+
+    // Nadaj zmiennej f numer watku
+    f_threadprivate = omp_get_thread_num();
 
     // Zainicjuj by byla wszedzie taka sama
     b_private = 100;
@@ -54,7 +63,7 @@ int main(){
     // a_shared moze byc rozne przy zapisie do d_local_pribae
     #pragma omp barrier
 
-    #pragma omp critical
+    #pragma omp critical(stdout)
     {
         // Dodaj do zmiennych wspoldzielonych
         // Elimiznacja aleznosci WAW
@@ -96,12 +105,34 @@ int main(){
     
 /*         } */
     
-  }
-  
+  }  
+
+  /* Poza Pierwszym Blokiem */
   printf("po zakonczeniu obszaru rownoleglego:\n");
   printf("\ta_shared \t= %d\n", a_shared);
   printf("\tb_private \t= %d\n", b_private);
   printf("\tc_firstprivate \t= %d\n", c_firstprivate);
   printf("\te_atomic \t= %d\n", e_atomic);
+
+
+    /* Drugi Blok Rownolegly */
+
+    // Przejdz tylko po ukonczeniu pierwszego obszaru
+    #pragma omp barrier
+    printf ("\n/* Drugi Blok Rownolegly */\n");
+
+    #pragma omp parallel default(none)
+    {
+        // Zapewnienie poprawnego wydruku
+        #pragma omp critical(stdout)
+        {
+            int thread_id = omp_get_thread_num();
+            int thread_count = omp_get_num_threads();
+
+            printf("# ID watku: %d\n", thread_id);
+            printf("\tLiczba watkow: %d\n", thread_count);
+            printf("\tWartosc f: %d\n", f_threadprivate);
+        }
+    }
   
 }

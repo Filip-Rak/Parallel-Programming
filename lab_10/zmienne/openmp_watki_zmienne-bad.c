@@ -28,9 +28,6 @@ int main(){
   {
     int i;
     int d_local_private;
-    
-    // Write After Read
-    // a_shared moze zostac zmodyfikowane przez 
     d_local_private = a_shared + c_firstprivate;
     
     for(i=0;i<10;i++){
