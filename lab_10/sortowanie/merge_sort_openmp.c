@@ -61,7 +61,7 @@ void merge_sort_openmp_2(
     poziom++;
     int q1=(p+r)/2;
 
-    #define task_declaration default(none) final(poziom>max_poziom ) firstprivate(A,p,r,q1,poziom) 
+    #define task_declaration default(none) final(poziom > max_poziom) firstprivate(A,p,r,q1,poziom) 
     #pragma omp task task_declaration
     {
         if (omp_in_final()) 

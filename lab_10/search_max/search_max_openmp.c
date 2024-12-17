@@ -14,8 +14,7 @@ double search_max(
 {
 
   double a_max = A[p];
-  int i;
-  for(i=p+1; i<=k; i++) if(a_max < A[i]) a_max = A[i];
+  for(int i=p+1; i<=k; i++) if(a_max < A[i]) a_max = A[i];
 
   return(a_max);
 }
@@ -61,7 +60,7 @@ double search_max_openmp_task(
 #pragma omp parallel default(none) shared(a_max) firstprivate(A,p,k)
   {
 
-#pragma omp single
+    #pragma omp single
     {
       int num_threads = omp_get_num_threads();
       float n = k-p+1;
@@ -69,22 +68,29 @@ double search_max_openmp_task(
       int num_tasks = 2*num_threads;
       int n_loc=ceil(n/num_tasks);   
 
-      for(int itask=0; itask<num_tasks; itask++){
+      for(int itask=0; itask<num_tasks; itask++)
+      {
 
-	int p_task = p+itask*n_loc;
-	if(p_task>k) {
-	  printf("Error in task decomposition! Exiting.\n");
-	  exit(0);
-	}
-	int k_task = p+(itask+1)*n_loc-1;
-	if(k_task>k) k_task = k;
+        int p_task = p+itask*n_loc;
+        if(p_task>k) 
+        {
+          printf("Error in task decomposition! Exiting.\n");
+          exit(0);
+	      }
+          int k_task = p+(itask+1)*n_loc-1;
+          if(k_task>k) 
+            k_task = k;
 
-#pragma omp task default(none)
-	{
+          #pragma omp task default(none) shared(a_max) firstprivate(A, p_task, k_task)
+          {
+              double local_max = search_max(A, p_task, k_task);
 
-
-	} // end task definition
-
+              #pragma omp critical
+              {
+                if (local_max > a_max)
+                  a_max = local_max;
+              }
+          } // end task definition
       } // end loop over tasks
     } // end single region    
   } // end parallel region
@@ -126,17 +132,70 @@ double bin_search_max(
 
 
 /*** single task for parallel binary search (array not sorted) - openmp ***/
-#define  max_level 4
+#define max_level 4
+#define threshold 100
 
 double bin_search_max_task(
   double* A,   
   int p,      
-  int r,
+  int k,
   int level      
 			   )
 {
+    // Przedział zawiera tylko jeden element
+    if (p == k) 
+    { 
+        return A[p];
+    }
 
+    // Przeszukaj liniowo/sekwencyjnie jezeli tablica jest zbyt mala
+    if ((k - p + 1) <= threshold) 
+    {
+        double local_max = A[p];
+        for (int i = p + 1; i <= k; i++) 
+        {
+            if (A[i] > local_max) 
+            {
+                local_max = A[i];
+            }
+        }
+        return local_max;
+    }
 
+    // Osiagnieto maksymalny poziom - szukaj sekwencyjnie
+    if (level >= max_level) 
+    {
+        double local_max = A[p];
+        for (int i = p + 1; i <= k; i++) 
+        {
+            if (A[i] > local_max) 
+            {
+                local_max = A[i];
+            }
+        }
+        return local_max;
+    }
+
+    // Podziel przedzial na dwie czesci
+    int mid = (p + k) / 2; 
+    double max_left, max_right;
+
+    // Utworz rownoelegle zadania dla obu czesci
+    #pragma omp task shared(max_left) firstprivate(A, p, mid, level)
+    {
+        max_left = bin_search_max_task(A, p, mid, level + 1);
+    }
+
+    #pragma omp task shared(max_right) firstprivate(A, mid, k, level)
+    {
+        max_right = bin_search_max_task(A, mid + 1, k, level + 1);
+    }
+
+    // Czekaj az oba zadania zostana wykonane
+    #pragma omp taskwait
+
+    // Zwroc wieksze maksimum
+    return (max_left > max_right) ? max_left : max_right;
 }
 
 /********** parallel binary search (array not sorted) - openmp ***********/
