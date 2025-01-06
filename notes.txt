@@ -168,10 +168,13 @@ MPI_Wait(&recv_request, &status);
 Pamięć dzielona:
 - W pamięci dzielonej wszystkie procesy mają dostęp do tej samej przestrzeni pamięci.
 - Zamiast przesyłać dane między procesami, procesy odczytują i zapisują je bezpośrednio w tej samej pamięci.
-	
-int *shared_data;
-MPI_Win win;
-MPI_Win_allocate_shared(sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &shared_data, &win);
+- Synchronizacja jest jawna.
+- Może być szybsza, ale to zależy bardzo od implementacji.
+
+kod:
+	int *shared_data;
+	MPI_Win win;
+	MPI_Win_allocate_shared(sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &shared_data, &win);
 
 	
 	
