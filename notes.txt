@@ -119,6 +119,9 @@ int MPI_Finalize();
 int gethostname(char *name, size_t len);
 	- Biblioteka unistd.h
 
+
+MPI_DATATYPE:
+	- MPI_INT (int)
 		
 		
 		
