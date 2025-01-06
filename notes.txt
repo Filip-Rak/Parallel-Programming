@@ -121,7 +121,64 @@ int gethostname(char *name, size_t len);
 
 
 MPI_DATATYPE:
-	- MPI_INT (int)
+	- MPI_INT (int).	
+	- MPI_LONG (long).
+	- MPI_SHORT (short).
+	- MPI_UNSIGNED (unsigned int).
+	- MPI_BYTE.
+	- MPI_FLOAT (float).
+	- MPI_DOUBLE (double)
+	- MPI_LONG_DOUBLE (long double).
+	- MPI_CHAR (char).
+	- MPI_C_BOOL (bool).
+	- MPI_PACKED - spakowane dane.
+	
+	
+	
+Przesyłanie i odbieranie komunikatów (punkt - punkt)
+- Jeden proces wysyła dane.
+- Drugi proces odbiera dane.
+
+MPI_Send i MPI_Recv
+- Blokujące operacje.
+- Proces wysyłający czeka, aż dane zostaną skopiowane do systemowego bufora lub odbiorca odbierze dane.
+- Proces odbierający czeka na przyjście danych.
+
+MPI_ISend i MPI_IRecv
+- Nieblokujące operacje.
+- Zwracają natychmiast po rozpoczęciu operacji.
+- Używają uchwytów (MPI_Request) do śledzenia stanu operacji.
+
+
+MPI_Request send_request, recv_request;
+MPI_Status status;
+
+// Nieblokujące wysyłanie
+int data = 42;
+MPI_ISend(&data, 1, MPI_INT, dest, tag, MPI_COMM_WORLD, &send_request);
+
+// Nieblokujące odbieranie
+int received_data;
+MPI_IRecv(&received_data, 1, MPI_INT, MPI_ANY_SOURCE, tag, MPI_COMM_WORLD, &recv_request);
+
+// Synchronizacja operacji
+MPI_Wait(&send_request, &status);
+MPI_Wait(&recv_request, &status);
+
+Pamięć dzielona:
+- W pamięci dzielonej wszystkie procesy mają dostęp do tej samej przestrzeni pamięci.
+- Zamiast przesyłać dane między procesami, procesy odczytują i zapisują je bezpośrednio w tej samej pamięci.
+	
+int *shared_data;
+MPI_Win win;
+MPI_Win_allocate_shared(sizeof(int), sizeof(int), MPI_INFO_NULL, MPI_COMM_WORLD, &shared_data, &win);
+
+	
+	
+	
+	
+	
+	
 		
 		
 		
