@@ -22,6 +22,7 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &id);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    /* Task */
     if (id == 0) // Process 0 sends data
     {
         // Prepare data
@@ -44,7 +45,7 @@ int main(int argc, char** argv)
         MPI_Pack(&data.value, 1, MPI_FLOAT, buffer, buffer_size, &position, MPI_COMM_WORLD);
         MPI_Pack(data.name, name_length, MPI_CHAR, buffer, buffer_size, &position, MPI_COMM_WORLD);
 
-        // Send the buffer
+        // Send the buffer to each process
         for (int i = 1; i < process_number; i++)
             MPI_Send(buffer, position, MPI_PACKED, i, 0, MPI_COMM_WORLD);
 
@@ -70,7 +71,7 @@ int main(int argc, char** argv)
         int position = 0;
         MPI_Unpack(buffer, buffer_size, &position, &data.id, 1, MPI_INT, MPI_COMM_WORLD);
         MPI_Unpack(buffer, buffer_size, &position, &data.value, 1, MPI_FLOAT, MPI_COMM_WORLD);
-        MPI_Unpack(buffer, buffer_size, &position, data.name, 100, MPI_CHAR, MPI_COMM_WORLD);
+        MPI_Unpack(buffer, buffer_size, &position, data.name, name_length, MPI_CHAR, MPI_COMM_WORLD);
 
         // Print received data
         printf("======== Process %d ========\n", id);
@@ -79,6 +80,7 @@ int main(int argc, char** argv)
         printf("\tValue: %.2f\n", data.value);
         printf("\tName: %s\n", data.name);
 
+        // Free dynamic data
         free(buffer);
     }
 
