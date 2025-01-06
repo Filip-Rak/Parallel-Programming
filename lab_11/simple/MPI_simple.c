@@ -35,16 +35,16 @@ int main(int argc, char** argv)
         else
         {
             printf("/* Proces 0 odbiera dane */\n");
-            for (int i = 1; i < size; i++) 
+            for (int current_rank = 1; current_rank < size; current_rank++) 
             {
                 // Receive host's rank
-                MPI_Recv(&ranksent, 1, MPI_INT, MPI_ANY_SOURCE, 0, MPI_COMM_WORLD, &status);
+                MPI_Recv(&ranksent, 1, MPI_INT, current_rank, 0, MPI_COMM_WORLD, &status);
 
                 // Receive host's name
-                MPI_Recv(received_hostname, sizeof(received_hostname), MPI_CHAR, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, &status);
+                MPI_Recv(received_hostname, sizeof(received_hostname), MPI_CHAR, current_rank, 1, MPI_COMM_WORLD, &status);
 
                 // Print data
-                printf("Dane od procesu %d:\n", ranksent);
+                printf("Dane od procesu: %d\n", status.MPI_SOURCE);
                 printf("\tRanga: %d\n", ranksent);
                 printf("\tNazwa hosta: %s\n", received_hostname);
             }
