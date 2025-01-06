@@ -70,7 +70,6 @@ void process_data(CustomType* data, int id)
     data->id = id;
 }
 
-
 int main(int argc, char **argv)
 {
     /* Initialization */

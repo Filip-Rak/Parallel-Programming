@@ -4,12 +4,13 @@
 #include "mpi.h"
 
 #define process_number 4
+#define name_length 100
 
 typedef struct 
 {
     int id;
     float value;
-    char name[100];
+    char name[name_length];
 } CustomType;
 
 int main(int argc, char** argv) 
@@ -32,7 +33,7 @@ int main(int argc, char** argv)
         buffer_size += temp_size;
         MPI_Pack_size(1, MPI_FLOAT, MPI_COMM_WORLD, &temp_size);
         buffer_size += temp_size;
-        MPI_Pack_size(100, MPI_CHAR, MPI_COMM_WORLD, &temp_size);
+        MPI_Pack_size(name_length, MPI_CHAR, MPI_COMM_WORLD, &temp_size);
         buffer_size += temp_size;
 
         // Allocate buffer
@@ -41,7 +42,7 @@ int main(int argc, char** argv)
         // Pack data
         MPI_Pack(&data.id, 1, MPI_INT, buffer, buffer_size, &position, MPI_COMM_WORLD);
         MPI_Pack(&data.value, 1, MPI_FLOAT, buffer, buffer_size, &position, MPI_COMM_WORLD);
-        MPI_Pack(data.name, 100, MPI_CHAR, buffer, buffer_size, &position, MPI_COMM_WORLD);
+        MPI_Pack(data.name, name_length, MPI_CHAR, buffer, buffer_size, &position, MPI_COMM_WORLD);
 
         // Send the buffer
         for (int i = 1; i < process_number; i++)
