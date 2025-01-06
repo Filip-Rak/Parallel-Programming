@@ -3,6 +3,8 @@
 #include <string.h>
 #include "mpi.h"
 
+#define process_number 4
+
 typedef struct 
 {
     int id;
@@ -42,11 +44,12 @@ int main(int argc, char** argv)
         MPI_Pack(data.name, 100, MPI_CHAR, buffer, buffer_size, &position, MPI_COMM_WORLD);
 
         // Send the buffer
-        MPI_Send(buffer, position, MPI_PACKED, 1, 0, MPI_COMM_WORLD);
+        for (int i = 1; i < process_number; i++)
+            MPI_Send(buffer, position, MPI_PACKED, i, 0, MPI_COMM_WORLD);
 
         free(buffer);
     } 
-    else if (id == 1) // Process 1 receives data
+    else // Other processes receive and print data
     {
         // Probe for message size
         MPI_Status status;
