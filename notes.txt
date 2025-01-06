@@ -68,5 +68,59 @@ Ustawianie liczby wątków:
 		- nazwa: opcjonalna. Nazwa indetyfikująca, tj. użytego muteksu
 		
 		
+
+# Open MPI
+
+int MPI_Init(int *argc, char ***argv);
+	- Inicjalizuje środowisko Open MPI.
+	- Zwraca kod statusu (== MPI_SUCCESS).
+	- Parametry:
+		- argc: ilosc argumentow przekazanych main.
+		- argv: tablica argumentow.
+		
+int MPI_Comm_rank(MPI_Comm comm, int *rank);
+	- Pobiera range procesu
+	- Zwraca kod statusu (== MPI_SUCCESS).
+	- Parametry:
+		- comm: Komunikator (np. MPI_COMM_WORLD).
+		- *rank: wskaźnik do miejsca gdzie zostanie zapisana ranga procesu.
+		
+int MPI_Comm_size(MPI_Comm comm, int *size);
+	- Pobiera liczbe procesów w komunikatorze
+	- Zwraca kod statusu (== MPI_SUCCESS).
+		
+int MPI_Send(const void *buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm);
+	- Wysyła dane z bufora do innego procesu w komunikatorze.
+	- Zwraca kod statusu.
+	- Parametry:
+		- *buf: wskaźnik do bufora z danymi do wysłania.
+		- count: liczba elementów w buforze.
+		- datatype: typ danych.
+		- dest: ranga procesu docelowego.
+		- tag: id transferu.
+		- comm: komunikator.
+		
+int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int source, int tag, MPI_Comm comm, MPI_Status *status);
+	- Odbiera dane od innego procesy w komunikatorze.
+	- Zwraca kod statusu.
+	- Parametry:
+		- *buf: Wskaźnik do miejsca na zapis.
+		- count: ilość elementów.
+		- datatype: typ danych.
+		- source: ranga procesu wysylajacego lub (MPI_ANY_SOURCE).
+		- tag: id wiadomosci lub (MPI_ANY_TAG).
+		- comm: Komunikator.
+		- status: struktura z info o komunikacie.
+
+int MPI_Finalize();
+	- Zakańcza środowisko i zwlania zasoby.
+	- Zwraca kod statusu.
+	
+int gethostname(char *name, size_t len);
+	- Biblioteka unistd.h
+
+		
+		
+		
 		
 		
