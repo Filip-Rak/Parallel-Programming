@@ -22,4 +22,4 @@ $(OUT1): $(SOURCE1)
 	$(LOADER) $(OPT) $(SOURCE1) -o $(OUT1) $(LIB)
 	
 clean:
-	rm *.o $(OUT1)
+	rm $(OUT1)

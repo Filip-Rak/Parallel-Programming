@@ -9,8 +9,8 @@ LIB = -lm
 PROC = 4
 
 # Files
-SOURCE1 = loop.c
-OUT1 = loop.out
+SOURCE1 = packed.c
+OUT1 = packed.out
 
 # Commands
 all: $(OUT1) run 
