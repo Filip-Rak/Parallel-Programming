@@ -70,6 +70,7 @@ int main(int argc, char** argv)
     {
         double root_final_pi = root_pi_sum * 4.f;
         printf ("Final result: %lf\n", root_final_pi);
+        printf ("Math.h constant: %lf\n", M_PI);
     }
 
     /* Finalization */
