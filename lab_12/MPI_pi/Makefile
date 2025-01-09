@@ -6,7 +6,7 @@ MPI = mpiexec -oversubscribe
 # Options
 OPT = -g -DDEBUG
 LIB = -lm
-PROC = 4
+PROC = 6
 
 # Files
 SOURCE1 = pi.c

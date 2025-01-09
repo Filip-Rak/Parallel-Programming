@@ -7,7 +7,7 @@
 
 #define ROOT 0
 #define enable_user_input false
-#define default_digit_num 1000
+#define default_digit_num 1e9
 
 int main(int argc, char** argv)
 {
