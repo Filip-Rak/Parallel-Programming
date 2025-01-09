@@ -27,7 +27,7 @@ int main(int argc, char** argv)
     {
         // Prepare data
         CustomType data = {1, 3.14, "Gorilla"};
-        int buffer_size = 0, temp_size, position = 0;
+        int buffer_size = 0, temp_size;
 
         // Calculate buffer size
         MPI_Pack_size(1, MPI_INT, MPI_COMM_WORLD, &temp_size);
@@ -41,6 +41,7 @@ int main(int argc, char** argv)
         char* buffer = malloc(buffer_size);
 
         // Pack data
+        int position = 0;
         MPI_Pack(&data.id, 1, MPI_INT, buffer, buffer_size, &position, MPI_COMM_WORLD);
         MPI_Pack(&data.value, 1, MPI_FLOAT, buffer, buffer_size, &position, MPI_COMM_WORLD);
         MPI_Pack(data.name, name_length, MPI_CHAR, buffer, buffer_size, &position, MPI_COMM_WORLD);
@@ -53,10 +54,11 @@ int main(int argc, char** argv)
     } 
     else // Other processes receive and print data
     {
-        // Probe for message size
+        // Probe for message status
         MPI_Status status;
         MPI_Probe(0, 0, MPI_COMM_WORLD, &status);
-
+    
+        // Read buffer size
         int buffer_size;
         MPI_Get_count(&status, MPI_PACKED, &buffer_size);
 
