@@ -1,5 +1,4 @@
-# Cpmpiller
-CCOMP = mpicc
+# Compiller
 LOADER = mpicc
 MPI = mpiexec -oversubscribe
 

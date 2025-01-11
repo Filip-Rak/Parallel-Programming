@@ -178,3 +178,43 @@ kod:
 
 int MPI_Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
 int MPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm);
+
+
+KOLOKWIUM:
+
+int MPI_Barrier(MPI_Comm comm);
+- Bariera czeka na wszystkie procesy w podanym komunikatorze
+
+int MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                int root, MPI_Comm comm);
+- root dzieli i wysyłą dane do podprocesów, one je zapisują
+- podzial jest blokowy, proces i dostaje dane od [i * sendcount : (i + 1) * sendcount]
+- sendcount i recvcoun musza byc zawsze takie same
+- scatter obłsuguje tylko równe liczby procesów. Inaczej trzeba użyć MPI_Scatterv
+
+int MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+               void *recvbuf, int recvcount, MPI_Datatype recvtype,
+               int root, MPI_Comm comm);
+- podprocesy wysyłają dane do roota, root je zapisuje.
+- recvcount to jest ile root odbiera od kazdego procesu, czyli recvcount = sendcount wtf
+
+int MPI_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                  void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                  MPI_Comm comm);
+- każdy proces wysyła swoje dane do wszystkich inny procesów i zpaisuje je w recvbuffer.
+- koniec końców każdy proces ma tę same dane
+- sendcount jest zawsze równe recvcount D:
+
+int MPI_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                 void *recvbuf, int recvcount, MPI_Datatype recvtype,
+                 MPI_Comm comm);
+- Efekt jest bardzo nie jasny. Jeżeli mamy tablice np. 8 elementów, unikalną dla każdego z 4 procesów
+  i wyślemy te tablice z sendcount 2 to wtedy każdy z tych procesów będzie dostawał kolejne jej partie po 2
+  p1 = A1, A2, B1, B2, C1, C2, D1, D2
+  p2 = A3, A4, B3, B4, C3, C4, D3, D4
+- Recvcount musi byc rowne sendcount XDD
+
+int MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
+                  MPI_Op op, MPI_Comm comm);
+- Redukcja na wynikach z każdego procesu, każdy proces zapisuje wynik.
