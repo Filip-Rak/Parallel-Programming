@@ -160,10 +160,6 @@ int main ( int argc, char** argv )
     }
 
     /************** || block column decomposition (collective only) || *******************/
-    int n_col = n_wier; // each process will handle n_col columns
-
-    // Row buffer
-    static double row[WYMIAR];
 
     // Zero result vector z
     for(i=0;i<WYMIAR;i++)
@@ -171,82 +167,48 @@ int main ( int argc, char** argv )
         z[i] = 0.0;
     }
 
+    // Allocate data on all processes
+    if (rank != ROOT)
+    {
+        a = (double *) malloc((ROZMIAR+1)*sizeof(double));
+    }
+
+    // Trasnfer data
+    MPI_Bcast(x, WYMIAR, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
+    MPI_Bcast(a, ROZMIAR, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
+    
+    int per_proc = ceil((double)WYMIAR / (double)size);
+    int start_col = rank * per_proc;
+    int end_col = (rank == size - 1) ? WYMIAR : (rank + 1) * per_proc;
+
     if(rank==ROOT) 
     {
       printf("Starting MPI matrix-vector product with block column decomposition!\n");
       t1 = MPI_Wtime();
     }
 
-    // Measure time
-    double time_current = 0.f;
-    double time_total = 0.f;
+    // Lokalne obliczenia dla przypisanych kolumn
+    double *z_local = (double *)malloc(WYMIAR * sizeof(double));
+    for (i = 0; i < WYMIAR; i++) {
+        z_local[i] = 0.0; // Inicjalizacja lokalnego wyniku
+    }
 
-    // --- Loop over matrix's rows ---
-    for(i = 0; i < WYMIAR; i++)
-    {
-        // 1. ROOT gets a row in a row major "a" matrix.
-        if (rank == ROOT) 
-        {
-            for (j = 0; j < WYMIAR; j++) 
-            {
-                row[j] = a[i * WYMIAR + j];
-            }
-        }
-
-        // 2. Broadcast entire row to each process
-        MPI_Bcast(row, WYMIAR, MPI_DOUBLE, ROOT, MPI_COMM_WORLD);
-
-        // 3. Calculation
-        
-        // Start time measurement for calculation
-        if (rank == ROOT)
-        {
-            time_current = MPI_Wtime();
-        }
-
-        // Each process calculates it's part to z [i] based on given columns
-        int start_col = rank * n_col;
-        double partial_sum = 0.0;
-        for (j = 0; j < n_col; j++) 
-        {
-            // k = start_col + j
-            int k = start_col + j;
-            partial_sum += row[k] * x[k];
-        }
-
-        // End time measurement for calculation
-        if (rank == ROOT) 
-        {
-            time_current = MPI_Wtime() - time_current;
-            time_total += time_current;
-        }
-
-        // 4. Sum up partial results in global_sum on root
-        double global_sum = 0.0;
-        if (rank == ROOT)
-        {
-            // MPI_IN_PLACE => global_sum will end up in partial_sum
-            global_sum = partial_sum; 
-            MPI_Reduce(MPI_IN_PLACE, &global_sum, 1, MPI_DOUBLE, MPI_SUM, ROOT, MPI_COMM_WORLD);
-        }
-        else
-        {
-            MPI_Reduce(&partial_sum, NULL, 1, MPI_DOUBLE, MPI_SUM, ROOT, MPI_COMM_WORLD);
-        }
-
-        // 5. Root sets up z to global sum
-        if (rank == ROOT) 
-        {
-            z[i] = global_sum;
+    for (j = start_col; j < end_col; j++) { // Iteracja po przypisanych kolumnach
+        for (i = 0; i < WYMIAR; i++) { // Iteracja po wierszach
+            z_local[i] += a[i * WYMIAR + j] * x[j]; // Przemnażanie wierszy przez kolumnę
         }
     }
+
+    // Redukcja wyników na procesie ROOT
+    MPI_Reduce(z_local, z, WYMIAR, MPI_DOUBLE, MPI_SUM, ROOT, MPI_COMM_WORLD);
 
     // just to measure time
     MPI_Barrier(MPI_COMM_WORLD);        
     if(rank==ROOT) {
       t1 = MPI_Wtime() - t1;
       printf("Werja rownolegla MPI z dekompozycją kolumnową blokową\n");
-      printf("\tczas wykonania: %lf, Gflop/s: %lf, GB/s> %lf\n", time_total, 2.0e-9*ROZMIAR/t1, (1.0+1.0/n)*8.0e-9*ROZMIAR/t1);
+      printf("\tczas wykonania: %lf, Gflop/s: %lf, GB/s> %lf\n",  
+      	     t1, 2.0e-9*ROZMIAR/t1, (1.0+1.0/n)*8.0e-9*ROZMIAR/t1);
       
     }
     
@@ -255,6 +217,7 @@ int main ( int argc, char** argv )
     {
       for(i=0;i<WYMIAR;i++)
       {
+        printf("a\n");
 	      if(fabs(y[i]-z[i])>1.e-9*z[i]) 
         {
 	        printf("Blad! i=%d, y[i]=%lf, z[i]=%lf - complete the code for column decomposition\n", i, y[i], z[i]);
