@@ -14,7 +14,7 @@ MPIRUN = mpiexec --oversubscribe
 # OPT = -g -DDEBUG -p
 # wersja zoptymalizowana do mierzenia czasu
 # OPT = -O3 -fopenmp -p
-OPT = -O3
+OPT = -O0
 #OPT = -O0 
 
 # pliki naglowkowe

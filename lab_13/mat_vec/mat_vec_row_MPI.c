@@ -15,7 +15,7 @@
 //#define WYMIAR 40320 // divisible by 128
 //#define WYMIAR 20160 // divisible by 64
 // #define WYMIAR 10080 // divisible by 1,2,3,4,5,6,7,8,9,10,12,14,16,18,20,24,28,30,32,36,40,60
-#define WYMIAR 8592
+#define WYMIAR 12144
 
 // weak scalability:    3040	4298	5265	6080	6795	7446	8043	8592
 // weak scalability:    10080	14254	17457	20160	22535	24690	26663	28504
