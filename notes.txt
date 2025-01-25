@@ -29,6 +29,20 @@
 	-std=c17: specyfikuje standard C
 
 
+## Pthread
+
+#include <pthread.h>
+
+int pthread_create(pthread_t *thread,
+                   const pthread_attr_t *attr,
+                   void *(*start_routine)(void *),
+                   void *arg);
+
+int pthread_join(ptrhead_t thread, int **retval);
+	- thread: id
+	- retval: return value
+
+
 # OpenMP:
 
 	- omp_get_max_threads(): zwraca maksymalną ilość wątków
@@ -218,3 +232,59 @@ int MPI_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
 int MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
                   MPI_Op op, MPI_Comm comm);
 - Redukcja na wynikach z każdego procesu, każdy proces zapisuje wynik.
+
+
+
+1. Skalowalność
+	Skalowalność w sensie silnym: Zwiększamy liczbę wątków. Oczekujemy, że czas pracy się skraca. (ograniczone przez prawo Amdhala)
+	Skalowalność w sensie słabym: Zwiększamy rozmiar zadania i proporcjonalnie ilość wątków. Oczekujemy, że czas pracy pozostaje ten sam
+
+2. Wydajnosć
+	# Przyspieszenie (Speed-Up): 
+		- Opisuje jak bardzo czas wykonania skraca się.
+		- S(p) = T(1) / T(p)
+		- Idealnie: S(p) = p
+	# Przyspieszenie skalowane:
+		S_s(p) = T(p * W0, 1) / T(p * W0, p)
+	
+	# Wydajność zrównoleglenia (Efficiency)
+		- Opisuje jak efektywnie są wykorzystywane nowe zasoby
+		- E(p) = S(p) / p
+		- Idealnie: 1
+
+3. GFLOPS
+	- Liczba operacji zmiennoprzecinkowych w czasie.
+	- Pokazuje jak dobrze program wykorzystuje zasoby.
+	- GFLOPS = czas_bazowy / (liczba operacji * 1e9)
+	- czas bazowy = czas_przetaktowany * przetaktowanie / takotowanie_bazowe
+
+4. Narzuty obliczeń równoległych:
+	- Niezrównoleglone fragmenty kodu (sekcje krytyczne, set-up etc.).
+	- Nierównoważne obciążenie między procesorami.
+	- Nadmiar komunikacji pomiędzy procesami.
+	- Ograniczenia dostępu do pamięci.
+	- Przełączanie kontekstu
+
+5. Zasady mierzenia czasu:
+	- Czas wykonania powinine byćwiększy niż 0.001s (1e-3).
+	- Ważna jest liczba procesorów fizycznych na maszynie.
+	- Wyniki trzeba uśrednić lub wybrać najkrótszy.
+	- Eliminacja wpływu innych procesów i użytkownika.
+	- Wyłączenie przetaktowywania
+
+6. Prawo Amdhala
+	Prawo Amdhala mówi, że nawet jeżeli większość programu można zrónoleglić to pewne jego sekcje będa musiały pozostać sekwencyjnie 
+
+7. Maskymalna wydajność teoretyczna:
+	Teoretyczne GFlops = Rdzenie * Operacje na cykl * taktowanie
+
+8. Analiza Gustafsona
+	Cel: Pokazuje, że skalowanie równoległe może być efektywne, jeśli wraz ze wzrostem liczby procesorów zwiększamy rozmiar problemu.
+	Główne założenia:
+		- Rozmiar problemu rośnie proporcjonalnie do liczby procesorów.
+		- Część sekwencyjna programu pozostaje stała, ale jej wpływ na całkowity czas obliczeń maleje.
+		- Efektywność procesorów nie spada, ponieważ każdy dodatkowy procesor dostaje nową porcję pracy.
+	S(p) = p -(1 - P) x p
+		- P: procent równoległej części programu
+		- p: liczba procesrów
+	
