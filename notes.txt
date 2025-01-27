@@ -246,6 +246,7 @@ int MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype da
 		- Idealnie: S(p) = p
 	# Przyspieszenie skalowane:
 		S_s(p) = T(p * W0, 1) / T(p * W0, p)
+		- Idealnie: S_s(p) = inf
 	
 	# Wydajność zrównoleglenia (Efficiency)
 		- Opisuje jak efektywnie są wykorzystywane nowe zasoby
@@ -287,4 +288,3 @@ int MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype da
 	S(p) = p -(1 - P) x p
 		- P: procent równoległej części programu
 		- p: liczba procesrów
-	
