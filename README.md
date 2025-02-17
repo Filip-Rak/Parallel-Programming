@@ -3,7 +3,9 @@
 ## Overview
 This repository contains solutions to lab exercises for the **Parallel and Distributed Programming** course during the fifth semester at **AGH University of Krakow**. The exercises cover various parallel programming techniques and paradigms using C and Java. Each lab focuses on a specific topic.
 
-![Image](media/eye-catch.png)
+![Coffee shop simulation – clients ordering and drinking coffee](media/coffe_shop.gif)
+
+*Simulation of a multi-threaded coffee shop where 300 clients (threads) take a mug (limited resource), use one of 4 coffee machines (limited resource), drink their coffee (wait), and repeat the process multiple times before leaving. While not waiting for resources, threads perform 'work' (simulated with busy-waiting and addition operation).*
 
 ---
 
