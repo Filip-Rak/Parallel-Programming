@@ -1,9 +1,9 @@
 CCOMP = gcc
 OPT = -g -O0
 
-SOURCE_2_2 = pub_sym_2_2.c
+SOURCE_2_2 = shop_sym.c
 
-OUT_2_2 = pub2_2.out
+OUT_2_2 = shop.out
 
 $(OUT_2_2): $(SOURCE_2_2)
 	$(CCOMP) $(SOURCE_2_2) $(OPT) -o $(OUT_2_2)
