@@ -10,7 +10,7 @@ This repository contains solutions to lab exercises for the **Parallel and Distr
 ## Technologies and Topics Covered
 
 ### C
-  - **Clone and Fork**: PProcess creation and management, focusing on understanding process isolation and resource sharing..
+  - **Clone and Fork**: Process creation and management, focusing on understanding process isolation and resource sharing..
   - **Pthreads**: Multithreading with POSIX threads, emphasizing synchronization mechanisms like **mutexes**, **barriers**, and
     **condition variables** to handle **RAW (Read-After-Write)**, **WAR (Write-After-Read)**, **and WAW (Write-After-Write)** dependencies.
   - **OpenMP**: Parallel programming with OpenMP directives for shared memory systems, optimizing performance through **loop parallelization**, **task scheduling**, and **data sharing**.
